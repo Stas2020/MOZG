@@ -709,11 +709,10 @@ void ThreadQuery::rcpt()
 void ThreadQuery::GetAllGuestFromDb()
 {
 
-
 	message = "_____________________Get count all guest";
 	Synchronize(&UpdateCaption2);
 
- 	if (no_guest)
+	if (no_guest)
 	{
 		message = "Количество гостей отключено";
 		Synchronize(&UpdateCaption2);
@@ -721,10 +720,31 @@ void ThreadQuery::GetAllGuestFromDb()
 	}
 
 
+	// Максимальное количество дней для запроса, чтобы кубы не зависли
+	// Статистика зависаний
+	// с 26.11.2021 - значение = 3 дня   Зависло раз:
+	int MaxDayCount = 3;
+
+	TDateTime StartDTFrag = IncDay(StartDT, 0);
+	TDateTime EndDTFrag = IncDay(StartDTFrag, MaxDayCount);
+		if(EndDTFrag >= EndDT)
+			EndDTFrag = IncDay(EndDT, 0);
+
+	bool done = false;
+
+	while(!done)
+	{
+
+	// debug
+	message = "CUBE request executing. Dates:   "+StartDTFrag.FormatString("DD/MM/YYYY")+" - "+EndDTFrag.FormatString("DD/MM/YYYY");
+	Synchronize(&UpdateCaption2);
+	// debug
+
+
 	UniQuery2->SQL->Clear();
 	UniQuery2->SQL->Add("SELECT Guests, TableId, Depnum, BusinessDate FROM [Diogen].[dbo].[GuestCount]");
-	UniQuery2->SQL->Add("WHERE ("+GetListShop("Depnum")+") AND BusinessDate >= convert(datetime,'"+StartDT.FormatString("DD/MM/YYYY")+"',104) AND BusinessDate <= convert(datetime,'"+EndDT.FormatString("DD/MM/YYYY")+"',104)");
-	UniQuery2->SQL->Add("ORDER BY BusinessDate, Depnum");
+	UniQuery2->SQL->Add("WHERE ("+GetListShop("Depnum")+") AND BusinessDate >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND BusinessDate <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
+	//UniQuery2->SQL->Add("ORDER BY BusinessDate, Depnum"); Сортировка не нужна
 	UniQuery2->Execute();
 
 	CountRecord = UniQuery2->RecordCount;
@@ -809,6 +829,24 @@ void ThreadQuery::GetAllGuestFromDb()
 
 	message = "CountResult > 2:    " + IntToStr(CountResult);
 	Synchronize(&UpdateCaption2);
+
+
+	if(EndDTFrag >= EndDT)
+	{
+		done = true;
+	}
+	else
+	{
+		StartDTFrag = IncDay(EndDTFrag, 1);
+		EndDTFrag = IncDay(StartDTFrag, MaxDayCount);
+		if(EndDTFrag >= EndDT)
+			EndDTFrag = IncDay(EndDT, 0);
+	}
+
+
+
+	} // End of DATETIME fragment cycle
+
 	message = "_____________________END count all guest";
 	Synchronize(&UpdateCaption2);
 
