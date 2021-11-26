@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.744,=D:\PROJECT_GITHUB\MOZG\Unit2.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.072,D:\PROJECT_GITHUB\MOZG\MOZG.cbproj=C:\Users\User\Documents\Embarcadero\Studio\Projects\MOZG.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.690,D:\PROJECT_GITHUB\MOZG\MOZGPCH1.h=C:\Users\User\Documents\Embarcadero\Studio\Projects\MOZGPCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.762,=C:\Users\User\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.706,=C:\Users\User\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.988,C:\Users\User\Documents\Embarcadero\Studio\Projects\MOZG.cbproj=C:\Users\User\Documents\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.984,C:\Users\User\Documents\Embarcadero\Studio\Projects\MOZGPCH1.h=C:\Users\User\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.730,=D:\PROJECT_GITHUB\MOZG\Unit1.cpp</Transaction>
+  </Transactions>
+</BorlandProject>
