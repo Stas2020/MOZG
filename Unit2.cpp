@@ -723,7 +723,7 @@ void ThreadQuery::GetAllGuestFromDb()
 	// Максимальное количество дней для запроса, чтобы кубы не зависли
 	// Статистика зависаний
 	// с 26.11.2021 - значение = 3 дня   Зависло раз:
-	int MaxDayCount = 3;
+	int MaxDayCount = 30;     // походу из-за получения значений не целым куском происх некорр обраб в дальнейшем в итераторе
 
 	TDateTime StartDTFrag = IncDay(StartDT, 0);
 	TDateTime EndDTFrag = IncDay(StartDTFrag, MaxDayCount);
@@ -744,7 +744,7 @@ void ThreadQuery::GetAllGuestFromDb()
 	UniQuery2->SQL->Clear();
 	UniQuery2->SQL->Add("SELECT Guests, TableId, Depnum, BusinessDate FROM [Diogen].[dbo].[GuestCount]");
 	UniQuery2->SQL->Add("WHERE ("+GetListShop("Depnum")+") AND BusinessDate >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND BusinessDate <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
-	//UniQuery2->SQL->Add("ORDER BY BusinessDate, Depnum"); Сортировка не нужна
+	UniQuery2->SQL->Add("ORDER BY BusinessDate, Depnum"); //Сортировка не нужна ???
 	UniQuery2->Execute();
 
 	CountRecord = UniQuery2->RecordCount;
