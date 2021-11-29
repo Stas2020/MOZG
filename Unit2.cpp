@@ -916,6 +916,10 @@ UnicodeString ThreadQuery::ConvertShopNum(int value)
 	{
 		return "111";
 	}
+	if (value == 124)
+	{
+		return "104";
+	}
 	return IntToStr(value);
 }
 //---------------------------------------------------------------------------
@@ -940,6 +944,10 @@ UnicodeString ThreadQuery::ConvertShopNum(UnicodeString value)
 	if (value == "114")
 	{
 		return "111";
+	}
+	if (value == "124")
+	{
+		return "104";
 	}
 	return value;
 
@@ -2113,7 +2121,7 @@ UnicodeString ThreadQuery::GetListShop()
 
 	}
 
-	result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114";
+	result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124";
 	return  result;
 }
 //---------------------------------------------------------------------------
@@ -2135,7 +2143,7 @@ UnicodeString ThreadQuery::GetListShop(UnicodeString Name_field)
 
 	}
 
-	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114";
+	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124";
 	return  result;
 }
 //---------------------------------------------------------------------------
