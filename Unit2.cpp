@@ -723,7 +723,7 @@ void ThreadQuery::GetAllGuestFromDb()
 	// ћаксимальное количество дней дл€ запроса, чтобы кубы не зависли
 	// —татистика зависаний
 	// с 26.11.2021 - значение = 3 дн€   «ависло раз:
-	int MaxDayCount = 30;     // походу из-за получени€ значений не целым куском происх некорр обраб в дальнейшем в итераторе
+	int MaxDayCount = 3;     // из-за получени€ значений "не целым куском" происх некорр обраб в дальнейшем в итераторе
 
 	TDateTime StartDTFrag = IncDay(StartDT, 0);
 	TDateTime EndDTFrag = IncDay(StartDTFrag, MaxDayCount);
@@ -731,6 +731,8 @@ void ThreadQuery::GetAllGuestFromDb()
 			EndDTFrag = IncDay(EndDT, 0);
 
 	bool done = false;
+
+	ListDateTime = new TListDateTime();  // перемещено снизу
 
 	while(!done)
 	{
@@ -751,7 +753,7 @@ void ThreadQuery::GetAllGuestFromDb()
 	message = "Count record: " + IntToStr(CountRecord);
 	Synchronize(&UpdateCaption2);
 
-	ListDateTime = new TListDateTime();
+	// ListDateTime = new TListDateTime(); ѕеремещено вверх
 
 
 	if (true) {
