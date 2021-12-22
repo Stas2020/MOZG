@@ -2942,7 +2942,7 @@ bool ThreadQuery::CheckTableOfVeranda(int idTable, int idShop)
 		}
 		case 310 : //Ресторан Внуково Аутлет
 		{
-			if ((idTable >= 30 && idTable <= 55))
+			if ((idTable >= 41 && idTable <= 66))
 			{
 			   result = true;
 			}
