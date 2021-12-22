@@ -709,11 +709,10 @@ void ThreadQuery::rcpt()
 void ThreadQuery::GetAllGuestFromDb()
 {
 
-
 	message = "_____________________Get count all guest";
 	Synchronize(&UpdateCaption2);
 
- 	if (no_guest)
+	if (no_guest)
 	{
 		message = "Количество гостей отключено";
 		Synchronize(&UpdateCaption2);
@@ -721,17 +720,40 @@ void ThreadQuery::GetAllGuestFromDb()
 	}
 
 
+	// Максимальное количество дней для запроса, чтобы кубы не зависли
+	// Статистика зависаний
+	// с 26.11.2021 - значение = 3 дня   Зависло раз:
+	int MaxDayCount = 3;     // из-за получения значений "не целым куском" происх некорр обраб в дальнейшем в итераторе
+
+	TDateTime StartDTFrag = IncDay(StartDT, 0);
+	TDateTime EndDTFrag = IncDay(StartDTFrag, MaxDayCount);
+		if(EndDTFrag >= EndDT)
+			EndDTFrag = IncDay(EndDT, 0);
+
+	bool done = false;
+
+	ListDateTime = new TListDateTime();  // перемещено снизу
+
+	while(!done)
+	{
+
+	// debug
+	message = "CUBE request executing. Dates:   "+StartDTFrag.FormatString("DD/MM/YYYY")+" - "+EndDTFrag.FormatString("DD/MM/YYYY");
+	Synchronize(&UpdateCaption2);
+	// debug
+
+
 	UniQuery2->SQL->Clear();
 	UniQuery2->SQL->Add("SELECT Guests, TableId, Depnum, BusinessDate FROM [Diogen].[dbo].[GuestCount]");
-	UniQuery2->SQL->Add("WHERE ("+GetListShop("Depnum")+") AND BusinessDate >= convert(datetime,'"+StartDT.FormatString("DD/MM/YYYY")+"',104) AND BusinessDate <= convert(datetime,'"+EndDT.FormatString("DD/MM/YYYY")+"',104)");
-	UniQuery2->SQL->Add("ORDER BY BusinessDate, Depnum");
+	UniQuery2->SQL->Add("WHERE ("+GetListShop("Depnum")+") AND BusinessDate >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND BusinessDate <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
+	UniQuery2->SQL->Add("ORDER BY BusinessDate, Depnum"); //Сортировка не нужна ???
 	UniQuery2->Execute();
 
 	CountRecord = UniQuery2->RecordCount;
 	message = "Count record: " + IntToStr(CountRecord);
 	Synchronize(&UpdateCaption2);
 
-	ListDateTime = new TListDateTime();
+	// ListDateTime = new TListDateTime(); Перемещено вверх
 
 
 	if (true) {
@@ -809,6 +831,24 @@ void ThreadQuery::GetAllGuestFromDb()
 
 	message = "CountResult > 2:    " + IntToStr(CountResult);
 	Synchronize(&UpdateCaption2);
+
+
+	if(EndDTFrag >= EndDT)
+	{
+		done = true;
+	}
+	else
+	{
+		StartDTFrag = IncDay(EndDTFrag, 1);
+		EndDTFrag = IncDay(StartDTFrag, MaxDayCount);
+		if(EndDTFrag >= EndDT)
+			EndDTFrag = IncDay(EndDT, 0);
+	}
+
+
+
+	} // End of DATETIME fragment cycle
+
 	message = "_____________________END count all guest";
 	Synchronize(&UpdateCaption2);
 
@@ -878,6 +918,10 @@ UnicodeString ThreadQuery::ConvertShopNum(int value)
 	{
 		return "111";
 	}
+	if (value == 124)
+	{
+		return "104";
+	}
 	return IntToStr(value);
 }
 //---------------------------------------------------------------------------
@@ -902,6 +946,10 @@ UnicodeString ThreadQuery::ConvertShopNum(UnicodeString value)
 	if (value == "114")
 	{
 		return "111";
+	}
+	if (value == "124")
+	{
+		return "104";
 	}
 	return value;
 
@@ -2075,7 +2123,7 @@ UnicodeString ThreadQuery::GetListShop()
 
 	}
 
-	result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114";
+	result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124";
 	return  result;
 }
 //---------------------------------------------------------------------------
@@ -2097,7 +2145,7 @@ UnicodeString ThreadQuery::GetListShop(UnicodeString Name_field)
 
 	}
 
-	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114";
+	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124";
 	return  result;
 }
 //---------------------------------------------------------------------------
