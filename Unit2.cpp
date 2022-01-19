@@ -2817,7 +2817,7 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 
 
     // New
-	if (idTable >= 920 && idTable <= 929)
+	if (idTable >= 951 && idTable <= 960)
 	{
 	   Type = 23;  //Интернет магазин (Филиас-онлайн)
 	}
