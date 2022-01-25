@@ -2001,6 +2001,11 @@ void ThreadQuery::rest()
 	shop->NameShop = "Аркус";
 	list_shop->push_back(shop);
 
+ 	shop = new TShop();
+	shop->NumShop = 193;
+	shop->NameShop = "Ленинский рынок";
+	list_shop->push_back(shop);
+
 
 	UnicodeString msg;
 	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
