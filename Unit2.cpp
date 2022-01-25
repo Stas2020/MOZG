@@ -594,6 +594,12 @@ void ThreadQuery::cot()
 	typeorder->Name = "мир сити";
 	list_typeorder->push_back(typeorder);
 
+
+ 	typeorder = new TTypeOrder();
+	typeorder->id = 26;
+	typeorder->Name = "Без Тарелок";
+	list_typeorder->push_back(typeorder);
+
 	message = "write file cot";
 	Synchronize(&UpdateCaption2);
 
@@ -1832,7 +1838,9 @@ void ThreadQuery::rest()
 	TShop *shop;
 	list_shop = new TListShop();
 
- /* */
+
+
+
 	shop = new TShop();
 	shop->NumShop = 205;
 	shop->NameShop = "Аврора";
@@ -2559,6 +2567,7 @@ void ThreadQuery::hall() // Залы
 	std::vector<TPairData> list_new_cat;
 	std::vector<TPairData> list_new_cat2;
 	std::vector<TPairData> list_new_cat3;
+    std::vector<TPairData> list_new_cat4;
 
 
 	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
@@ -2597,6 +2606,14 @@ void ThreadQuery::hall() // Залы
 				int id_t = (*it_typeorder)->id;
 				UnicodeString name_type_oper = (*it_typeorder)->Name;
 				list_new_cat3.push_back(std::pair<int,UnicodeString>(id_t,name_type_oper));
+				continue;
+			}
+
+			if ((*it_typeorder)->id == 26 )//чтоб id залов не изменилось перенесем новые в конец
+			{
+				int id_t = (*it_typeorder)->id;
+				UnicodeString name_type_oper = (*it_typeorder)->Name;
+				list_new_cat4.push_back(std::pair<int,UnicodeString>(id_t,name_type_oper));
 				continue;
 			}
 
@@ -2692,6 +2709,42 @@ void ThreadQuery::hall() // Залы
 		try
 		{
 			item = list_new_cat3.at(0);
+		}
+		catch (...)
+		{
+			continue;
+		}
+
+
+		UnicodeString msg = "";
+		msg += "1;";   						   													//id базы данных
+		msg += IntToStr(idx)+";";     															//id зала
+		msg += item.second + " " + (*it_shop)->NameShop +";";                                   //название зала
+		msg += "3;";   																			//статус
+		msg += IntToStr((*it_shop)->NumShop)+";";   									        //id ресторана
+		msg += "0;";   																	        //порядок сортировки
+		msg += IntToStr((*it_shop)->NumShop)+";";                                               //id подразделения
+		msg += "0";                                                                             //вместимость гостей
+
+
+		WriteToFile("hall.csv",msg.Trim());
+		idx++;
+
+		THall *hall = new THall();
+		hall->id = item.first;
+		hall->Name = item.second;
+		hall->NumShop = (*it_shop)->NumShop;
+		ListHall->Add(hall);
+
+	}
+
+     	// Новые залы переместим в конец списка чтоб у старых не сбилась нумерация
+	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
+	{
+		std::pair<int,UnicodeString> item;
+		try
+		{
+			item = list_new_cat4.at(0);
 		}
 		catch (...)
 		{
@@ -2836,6 +2889,12 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	if (idTable >= 941 && idTable <= 942)
 	{
 	   Type = 25;  //мир сити
+	}
+
+
+	if ((idTable >= 100 && idTable <= 102) || (idTable >= 104 && idTable <= 107))
+	{
+	   Type = 26;  //Без Тарелок
 	}
 
 	for (int i = 0; i < ListHall->Count; i++)
