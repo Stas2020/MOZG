@@ -990,7 +990,7 @@ void ThreadQuery::order()
 	UniQuery1->SQL->Clear();
 	UniQuery1->SQL->Add("SELECT saleman, cod_shop, stol, spoolname, timer, [Action] AS action, business_date, sum_b, chek_sn, dat_chek, dk_dcod, cas_n, comment");
 	UniQuery1->SQL->Add("FROM chekA");
-	UniQuery1->SQL->Add("WHERE sum_b <> 0 AND ( "+GetListShop()+") AND business_date >= convert(datetime,'"+StartDT.FormatString("DD/MM/YYYY")+"',104) AND business_date <= convert(datetime,'"+EndDT.FormatString("DD/MM/YYYY")+"',104)");
+	UniQuery1->SQL->Add("WHERE sum_b <> 0 AND ( "+GetListShop()+") AND business_date >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND business_date <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
 	UniQuery1->SQL->Add("ORDER BY dat_chek, timer");
 	UniQuery1->Execute();
 
