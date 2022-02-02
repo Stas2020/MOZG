@@ -966,6 +966,27 @@ void ThreadQuery::order()
 	message = "_____________________Start query order (Заказы)";
 	Synchronize(&UpdateCaption2);
 
+
+	int MaxMonthCount = 1; // Если загрузка более чем за меся, фрагментировать
+
+	TDateTime StartDTFrag = IncDay(StartDT, 0);
+	TDateTime EndDTFrag = IncMonth(StartDTFrag, MaxMonthCount);
+		if(EndDTFrag >= EndDT)
+			EndDTFrag = IncDay(EndDT, 0);
+
+	bool done = false;
+
+
+
+
+	while(!done)
+	{
+		// debug
+	message = "SQL request executing. Dates:   "+StartDTFrag.FormatString("DD/MM/YYYY")+" - "+EndDTFrag.FormatString("DD/MM/YYYY");
+	Synchronize(&UpdateCaption2);
+	// debug
+
+
 	UniQuery1->SQL->Clear();
 	UniQuery1->SQL->Add("SELECT saleman, cod_shop, stol, spoolname, timer, [Action] AS action, business_date, sum_b, chek_sn, dat_chek, dk_dcod, cas_n, comment");
 	UniQuery1->SQL->Add("FROM chekA");
@@ -1103,10 +1124,29 @@ void ThreadQuery::order()
 		message = "CountGuest > 1:  " + IntToStr(CountGuestResult);
 		Synchronize(&UpdateCaption2);
 
-		message = "End order (Заказы)";
-		Synchronize(&UpdateCaption2);
+
+	if(EndDTFrag >= EndDT)
+	{
+		done = true;
+	}
+	else
+	{
+		StartDTFrag = IncDay(EndDTFrag, 1);
+		EndDTFrag = IncMonth(StartDTFrag, MaxMonthCount);
+		if(EndDTFrag >= EndDT)
+			EndDTFrag = IncDay(EndDT, 0);
 	}
 
+
+
+	} // End of DATETIME fragment cycle
+
+
+
+	}
+
+		message = "End order (Заказы)";
+		Synchronize(&UpdateCaption2);
 }
 //---------------------------------------------------------------------------
 TList *ThreadQuery::GetPayments(UnicodeString check_sn, UnicodeString cas_n)
