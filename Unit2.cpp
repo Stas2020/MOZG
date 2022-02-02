@@ -2782,17 +2782,13 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 {
 	int Type = 6;
 
-	if ( (idTable >= 231 && idTable <= 240) || ((idTable >= 900 && idTable <= 909)))
+	if ( (idTable >= 231 && idTable <= 240) || ((idTable >= 900 && idTable <= 909)) || ((idTable >= 169 && idTable <= 173)))
 	{
 	   Type = 1;   //Яндекс еда
 	}
-	if (idTable >= 169 && idTable <= 173)
+	if (idTable >= 208 && idTable <= 209)
 	{
-	   Type = 1;   //Яндекс еда
-	}
-	if (idTable >= 200 && idTable <= 209)
-	{
-	   Type = 2; //Delivery club
+	   Type = 2; //Delivery club самовывоз
 	}
 	if (idTable >= 245 && idTable <= 245)
 	{
@@ -2815,11 +2811,11 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	{
 	   Type = 10;  //Доставка с сайта  Пешком
 	}
-	if (idTable >= 185 && idTable <= 195)
+	if ((idTable >= 185 && idTable <= 195) || (idTable >= 920 && idTable <= 929) || (idTable >= 951 && idTable <= 960))
 	{
 	   Type = 11;  //Доставка с сайта  Автомобиль
 	}
-	if ((idTable >= 196 && idTable <= 199) || (idTable >= 930 && idTable <= 941) )
+	if ((idTable >= 196 && idTable <= 199) || (idTable >= 930 && idTable <= 934)  || (idTable >= 935 && idTable <= 940) )
 	{
 	   Type = 12;  //Доставка с сайта  Самовынос
 	}
@@ -2847,15 +2843,7 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	{
 	   Type = 18;  //WA, Самовынос
 	}
-	if (idTable >= 156 && idTable <= 160)
-	{
-	   Type = 19;  //Сам пришел, сам унес
-	}
-	if (idTable >= 214 && idTable <= 214)
-	{
-	   Type = 19;  //Сам пришел, сам унес
-	}
-	if (idTable >= 241 && idTable <= 244)
+	if ((idTable >= 156 && idTable <= 160) || idTable == 214 || (idTable >= 241 && idTable <= 244))
 	{
 	   Type = 19;  //Сам пришел, сам унес
 	}
