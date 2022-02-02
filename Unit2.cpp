@@ -978,6 +978,7 @@ void ThreadQuery::order()
 
 
 
+	int CountRecordLast = 0;
 
 	while(!done)
 	{
@@ -999,6 +1000,9 @@ void ThreadQuery::order()
 	Synchronize(&UpdateCaption2);
 
 	int CountGuestResult = 0;
+
+	CountRecordLast = list_order->size();
+
 
 	if (!UniQuery1->IsEmpty())
 	{
@@ -1086,9 +1090,14 @@ void ThreadQuery::order()
 		Synchronize(&UpdateCaption2);
 
 
+		int counter = 0;
+
 		UnicodeString msg;
 		for (TListOrder::iterator it_order = list_order->begin(); it_order != list_order->end(); ++it_order)
 		{
+			counter++;
+			if(counter > CountRecordLast)
+			{
 			CountRecord--;
 			Synchronize(&UpdateCaption);
 			UnicodeString msg;
@@ -1118,6 +1127,7 @@ void ThreadQuery::order()
 			msg += " ";                                //id адреса доставки
 
 			WriteToFile("order.csv",msg);
+			}
 		}
 
 
