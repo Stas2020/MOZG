@@ -678,7 +678,7 @@ void ThreadQuery::rcpt()
 		while (!UniQuery1->Eof)
 		{
 			CountRecord--;
-			Synchronize(&UpdateCaption);
+			Synchronize(&UpdateCaptionDelay);
 			msg = "";
 			msg += "1;"; 																						//id базы данных
 			msg +=UniQuery1->FieldByName("cas_n")->AsString+UniQuery1->FieldByName("chek_sn")->AsString+";";   	//id визита
@@ -695,15 +695,18 @@ void ThreadQuery::rcpt()
 
 			summ += UniQuery1->FieldByName("sum_b")->AsFloat;
 
-			WriteToFile("rcpt.csv",msg);
+			WriteToFileDelayed("rcpt.csv",msg);
 			UniQuery1->Next();
 		}
 
+		Synchronize(&UpdateCaption);
 
 		message = "End write file";
 		Synchronize(&UpdateCaption2);
 
 	}
+
+	WriteToFileDelayed_WriteBufferLeftOvers();
 
 	message = "Summ : " + FormatFloat("0.##",summ) ;
 	Synchronize(&UpdateCaption2);
@@ -745,7 +748,7 @@ void ThreadQuery::GetAllGuestFromDb()
 
 	// debug
 	message = "CUBE request executing. Dates:   "+StartDTFrag.FormatString("DD/MM/YYYY")+" - "+EndDTFrag.FormatString("DD/MM/YYYY");
-	Synchronize(&UpdateCaption2);
+	Synchronize(&UpdateCaption2NoLog);
 	// debug
 
 
@@ -757,7 +760,7 @@ void ThreadQuery::GetAllGuestFromDb()
 
 	CountRecord = UniQuery2->RecordCount;
 	message = "Count record: " + IntToStr(CountRecord);
-	Synchronize(&UpdateCaption2);
+	Synchronize(&UpdateCaption2NoLog);
 
 	// ListDateTime = new TListDateTime(); Перемещено вверх
 
@@ -830,13 +833,15 @@ void ThreadQuery::GetAllGuestFromDb()
 
 
 		CountRecord--;
-		Synchronize(&UpdateCaption);
+		Synchronize(&UpdateCaptionDelay);
 
 		UniQuery2->Next();
 	}
 
+	Synchronize(&UpdateCaption);
+
 	message = "CountResult > 2:    " + IntToStr(CountResult);
-	Synchronize(&UpdateCaption2);
+	Synchronize(&UpdateCaption2NoLog);
 
 
 	if(EndDTFrag >= EndDT)
@@ -967,7 +972,7 @@ void ThreadQuery::order()
 	Synchronize(&UpdateCaption2);
 
 
-	int MaxMonthCount = 1; // Если загрузка более чем за меся, фрагментировать
+	int MaxMonthCount = 4; // Если загрузка более чем за меся, фрагментировать
 
 	TDateTime StartDTFrag = IncDay(StartDT, 0);
 	TDateTime EndDTFrag = IncMonth(StartDTFrag, MaxMonthCount);
@@ -978,7 +983,7 @@ void ThreadQuery::order()
 
 
 
-	int CountRecordLast = 0;
+	//int CountRecordLast = 0;
 
 	while(!done)
 	{
@@ -1001,7 +1006,7 @@ void ThreadQuery::order()
 
 	int CountGuestResult = 0;
 
-	CountRecordLast = list_order->size();
+	//CountRecordLast = list_order->size();
 
 
 	if (!UniQuery1->IsEmpty())
@@ -1012,7 +1017,7 @@ void ThreadQuery::order()
 		while (!UniQuery1->Eof)
 		{
 			CountRecord--;
-			Synchronize(&UpdateCaption);
+			Synchronize(&UpdateCaptionDelay);
 
 			TCheck *check = new TCheck();
 
@@ -1082,53 +1087,14 @@ void ThreadQuery::order()
 			UniQuery1->Next();
 		}
 
+		Synchronize(&UpdateCaption);
+
 		message = "End prepare data";
 		Synchronize(&UpdateCaption2);
 
 		CountRecord = list_order->size();
 		message = "Count order: " + IntToStr(CountRecord);
 		Synchronize(&UpdateCaption2);
-
-
-		int counter = 0;
-
-		UnicodeString msg;
-		for (TListOrder::iterator it_order = list_order->begin(); it_order != list_order->end(); ++it_order)
-		{
-			counter++;
-			if(counter > CountRecordLast)
-			{
-			CountRecord--;
-			Synchronize(&UpdateCaption);
-			UnicodeString msg;
-			msg += "1;";   																//1 id базы данных
-			msg += (*it_order)->NumOrder+";";   							            //2 id визита
-			msg += ConvertShopNum((*it_order)->NumShop)+";";   							//3 id ресторана
-			msg += "0;";   																//4 id заказа внутри визита
-			msg += "0;";   																//5 id неизменяемого типа заказа
-			msg += IntToStr((*it_order)->TypeOrder)+";";   								//6 id типа заказа
-			msg += (*it_order)->BusinessDate.FormatString("YYYY-MM-DD")+";";				//7 дата смены
-			msg += (*it_order)->Start.FormatString("HH:MM:SS")+";";   						//8 время открытия заказа time
-			msg += (*it_order)->End.FormatString("YYYY-MM-DD")+";";   						//9 дата закрытия заказа  date
-			msg += (*it_order)->End.FormatString("HH:MM:SS")+";";   						//10 время закрытия заказа time
-			msg += IntToStr((*it_order)->NumTable)+";";   									//11 id стола
-			msg += IntToStr((*it_order)->NumTable)+";";   																//12 номер стола
-			msg += ConvertShopNum((*it_order)->NumShop)+";";   															//13 id ресторана зала
-			msg += IntToStr(GetIdHall((*it_order)->NumTable, StrToInt(ConvertShopNum((*it_order)->NumShop))))+";";  	//14 id зала
-			msg += IntToStr((*it_order)->CountGuest)+";";   															//15 количество гостей
-			msg += IntToStr((*it_order)->idWaiter)+";";   												//16 id сотрудника главного официанта
-			msg += IntToStr((*it_order)->idWaiter)+";";   												//17 id сотрудника кассира
-			msg += IntToStr((*it_order)->idWaiter)+";";   												//18 id сотрудника официанта
-			msg += IntToStr(GetIntervalDateTime((*it_order)->Start,(*it_order)->End))+";";  			//19 длительность заказа
-			msg += ReplaceComma(FloatToStr((*it_order)->SumPaymentOrder))+";";   						//20 оплаченная сумма заказа
-			msg += (*it_order)->NumLastCheck+";";      													//21 id последнего чека
-			msg += ";";                                //id основного визита
-			msg += ";";                                //дата и время пречека
-			msg += " ";                                //id адреса доставки
-
-			WriteToFile("order.csv",msg);
-			}
-		}
 
 
 		message = "CountGuest > 1:  " + IntToStr(CountGuestResult);
@@ -1154,6 +1120,43 @@ void ThreadQuery::order()
 
 
 	}
+
+
+			UnicodeString msg = "";
+		for (TListOrder::iterator it_order = list_order->begin(); it_order != list_order->end(); ++it_order)
+		{
+			CountRecord--;
+
+			Synchronize(&UpdateCaptionDelay);
+
+			msg = "1;";   																//1 id базы данных
+			msg += (*it_order)->NumOrder+";";   							            //2 id визита
+			msg += ConvertShopNum((*it_order)->NumShop)+";";   							//3 id ресторана
+			msg += "0;";   																//4 id заказа внутри визита
+			msg += "0;";   																//5 id неизменяемого типа заказа
+			msg += IntToStr((*it_order)->TypeOrder)+";";   								//6 id типа заказа
+			msg += (*it_order)->BusinessDate.FormatString("YYYY-MM-DD")+";";				//7 дата смены
+			msg += (*it_order)->Start.FormatString("HH:MM:SS")+";";   						//8 время открытия заказа time
+			msg += (*it_order)->End.FormatString("YYYY-MM-DD")+";";   						//9 дата закрытия заказа  date
+			msg += (*it_order)->End.FormatString("HH:MM:SS")+";";   						//10 время закрытия заказа time
+			msg += IntToStr((*it_order)->NumTable)+";";   									//11 id стола
+			msg += IntToStr((*it_order)->NumTable)+";";   																//12 номер стола
+			msg += ConvertShopNum((*it_order)->NumShop)+";";   															//13 id ресторана зала
+			msg += IntToStr(GetIdHall((*it_order)->NumTable, StrToInt(ConvertShopNum((*it_order)->NumShop))))+";";  	//14 id зала
+			msg += IntToStr((*it_order)->CountGuest)+";";   															//15 количество гостей
+			msg += IntToStr((*it_order)->idWaiter)+";";   												//16 id сотрудника главного официанта
+			msg += IntToStr((*it_order)->idWaiter)+";";   												//17 id сотрудника кассира
+			msg += IntToStr((*it_order)->idWaiter)+";";   												//18 id сотрудника официанта
+			msg += IntToStr(GetIntervalDateTime((*it_order)->Start,(*it_order)->End))+";";  			//19 длительность заказа
+			msg += ReplaceComma(FloatToStr((*it_order)->SumPaymentOrder))+";";   						//20 оплаченная сумма заказа
+			msg += (*it_order)->NumLastCheck+";";      													//21 id последнего чека
+			msg += ";";                                //id основного визита
+			msg += ";";                                //дата и время пречека
+			msg += " ";                                //id адреса доставки
+			WriteToFileDelayed("order.csv",msg);
+		}
+		Synchronize(&UpdateCaption);
+		WriteToFileDelayed_WriteBufferLeftOvers();
 
 		message = "End order (Заказы)";
 		Synchronize(&UpdateCaption2);
@@ -1230,7 +1233,7 @@ void ThreadQuery::pbnd()
 	for (TListOrder::iterator it_order = list_order->begin(); it_order != list_order->end(); ++it_order)
 	{
 		CountRecord++;
-		Synchronize(&UpdateCaption);
+		Synchronize(&UpdateCaptionDelay);
 
 		TListCheck *list_check = (*it_order)->list_check;
 		int id_pr = 0;
@@ -1320,7 +1323,7 @@ void ThreadQuery::pbnd()
 					msg +=	"0;";   																				//id места приготовления
 					msg +=	IntToStr(it_check.operator *()->id_discount);   									    //id скидки
 
-					WriteToFile("pbnd.csv",msg);
+					WriteToFileDelayed("pbnd.csv",msg);
 					id_pr++;
 
 					itm_Summ += payment->part * netto ;
@@ -1356,6 +1359,8 @@ void ThreadQuery::pbnd()
 			//Synchronize(&UpdateCaption2);
 
 	}
+	WriteToFileDelayed_WriteBufferLeftOvers();
+	Synchronize(&UpdateCaption);
 
 
 	message = "Count: " + IntToStr(CountRecord);
@@ -1493,7 +1498,7 @@ void ThreadQuery::ShowData_pbnd()
 	{
 	   TShopPayment *shop_pay =(TShopPayment*)List_pbnd->operator [](i);
 	   message = "Shop:" + IntToStr(shop_pay->NumShop) + " " + shop_pay->BusinessDate.FormatString("dd-mm-yy")+"     Итого: " + FormatFloat("0.##",shop_pay->sum_plast+shop_pay->sum_cash+shop_pay->sum_30+shop_pay->sum_card_present) + " " + "     Summ plast: " + FormatFloat("0.##",shop_pay->sum_plast) + "     Summ cash: " + FormatFloat("0.##",shop_pay->sum_cash) + "     Summ 30: " + FormatFloat("0.##",shop_pay->sum_30)+ "     Summ Card Present: " + FormatFloat("0.##",shop_pay->sum_card_present);
-	   Synchronize(&UpdateCaption2);
+	   Synchronize(&UpdateCaption2NoLog);
 
 	   summm +=  shop_pay->sum_plast+shop_pay->sum_cash+shop_pay->sum_30+shop_pay->sum_card_present;
 	}
@@ -1512,7 +1517,7 @@ void ThreadQuery::ShowData_pmnt()
 	{
 	   TShopPayment *shop_pay =(TShopPayment*)List_pmnt->operator [](i);
 	   message = "Shop:" + IntToStr(shop_pay->NumShop) + " " + shop_pay->BusinessDate.FormatString("dd-mm-yy")+"    Итого: " + FormatFloat("0.##",shop_pay->sum_plast+shop_pay->sum_cash+shop_pay->sum_30+shop_pay->sum_card_present) + " " + "    Summ plast: " + FormatFloat("0.##",shop_pay->sum_plast) + "    Summ cash: " + FormatFloat("0.##",shop_pay->sum_cash) + "    Summ 30: " + FormatFloat("0.##",shop_pay->sum_30)+ "    Summ Card Present: " + FormatFloat("0.##",shop_pay->sum_card_present);
-	   Synchronize(&UpdateCaption2);
+	   Synchronize(&UpdateCaption2NoLog);
 
        summm +=  shop_pay->sum_plast+shop_pay->sum_cash+shop_pay->sum_30+shop_pay->sum_card_present;
 	}
@@ -2239,7 +2244,7 @@ void ThreadQuery::writeoff()//Списания
 		while (!UniQuery1->Eof)
 		{
 			CountRecord--;
-			Synchronize(&UpdateCaption);
+			Synchronize(&UpdateCaptionDelay);
 
 			if (last_check_sn != UniQuery1->FieldByName("chek_sn")->AsString)
 			{
@@ -2306,12 +2311,15 @@ void ThreadQuery::writeoff()//Списания
 			msg += UniQuery1->FieldByName("dk_dcod")->AsString;                                     //GUID причины списания 2
 
 
-			WriteToFile("writeoff.csv",msg.Trim());
+			WriteToFileDelayed("writeoff.csv",msg.Trim());
 			UniQuery1->Next();
 			id_document++;
 		}
+		Synchronize(&UpdateCaption);
 
 	}
+
+	WriteToFileDelayed_WriteBufferLeftOvers();
 
 	message = "End writeoff (Списания)";
 	Synchronize(&UpdateCaption2);
@@ -2528,7 +2536,7 @@ void ThreadQuery::pmnt() //Платежи
 	{
 
 		CountRecord++;
-		Synchronize(&UpdateCaption);
+		Synchronize(&UpdateCaptionDelay);
 
 		TListCheck *list_check = (*it_order)->list_check;
 		int id_pr = 0;
@@ -2559,7 +2567,7 @@ void ThreadQuery::pmnt() //Платежи
 
 				AddData_pmnt((*it_order)->NumShop,(*it_order)->BusinessDate, payment->id, payment->amount);
 
-				WriteToFile("pmnt.csv",msg.Trim());
+				WriteToFileDelayed("pmnt.csv",msg.Trim());
 				id_pr++;
 
 
@@ -2585,6 +2593,8 @@ void ThreadQuery::pmnt() //Платежи
 		}
 
 	}
+	Synchronize(&UpdateCaption);
+	WriteToFileDelayed_WriteBufferLeftOvers();
 
     message = "------------------------------------";
 	Synchronize(&UpdateCaption2);
@@ -2836,7 +2846,8 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	{
 	   Type = 1;   //Яндекс еда
 	}
-	if (idTable >= 208 && idTable <= 209)
+    if (idTable >= 200 && idTable <= 209)
+	//if (idTable >= 208 && idTable <= 209)
 	{
 	   Type = 2; //Delivery club самовывоз
 	}
@@ -3197,7 +3208,7 @@ void ThreadQuery::table() //Столы
 		while (!UniQuery1->Eof)
 		{
 			CountRecord++;
-			Synchronize(&UpdateCaption);
+			Synchronize(&UpdateCaptionDelay);
 
 			int capacity = 1;
 			UniQuery2->SQL->Clear();
@@ -3218,12 +3229,14 @@ void ThreadQuery::table() //Столы
 			msg += IntToStr(it_shop.operator *()->NumShop);   												//id ресторана
 
 
-			WriteToFile("table.csv",msg.Trim());
+			WriteToFileDelayed("table.csv",msg.Trim());
 			UniQuery1->Next();
 		}
+		Synchronize(&UpdateCaption);
 
 	}
 
+	WriteToFileDelayed_WriteBufferLeftOvers();
 	message = "End table (Столы)";
 	Synchronize(&UpdateCaption2);
 }
@@ -3250,9 +3263,10 @@ void ThreadQuery::table_aeroport() //Столы
 		msg += "3;";   																//статус
 		msg += IntToStr(it_shop.operator *()->NumShop);   							//id ресторана
 
-		WriteToFile("table.csv",msg.Trim());
+		WriteToFileDelayed("table.csv",msg.Trim());
 	}
 
+	WriteToFileDelayed_WriteBufferLeftOvers();
 	message = "End table (Столы)";
 	Synchronize(&UpdateCaption2);
 }
@@ -3289,11 +3303,18 @@ void ThreadQuery::cost() //Себестоимость
 	message = "_____________________Start cost (Себестоимость)";
 	Synchronize(&UpdateCaption2);
 
+	if (no_cost)
+	{
+		message = "Себестоимость отключена";
+		Synchronize(&UpdateCaption2);
+		return;
+	}
+
 	TDateTime DTS = IncMonth(StartDT, -2);
 
 
 	UniQuery1->SQL->Clear();
-	UniQuery1->SQL->Add("SELECT * FROM cost WHERE dt1 >= convert(datetime,'"+DTS.FormatString("DD/MM/YYYY")+"',104) AND ( "+GetListShop("cost.cod_shop")+");");
+	UniQuery1->SQL->Add("declare @dt1 datetime;set @dt1 = convert(datetime,'"+DTS.FormatString("DD/MM/YYYY")+"',104);declare @dt2 datetime;set @dt2 = convert(datetime,'"+EndDT.FormatString("DD/MM/YYYY")+"',104);SELECT * FROM cost WHERE dt1 >= @dt1 AND dt1 <= @dt2 AND ( "+GetListShop("cost.cod_shop")+");");
 	UniQuery1->Execute();
 
 	CountRecord = UniQuery1->RecordCount;
@@ -3303,7 +3324,7 @@ void ThreadQuery::cost() //Себестоимость
 	while (!UniQuery1->Eof)
 	{
 		CountRecord--;
-		Synchronize(&UpdateCaption);
+		Synchronize(&UpdateCaptionDelay);
 
 
 		UnicodeString LocalCode = UniQuery1->FieldByName("cod_good")->AsString;
@@ -3342,11 +3363,13 @@ void ThreadQuery::cost() //Себестоимость
 			msg += UniQuery1->FieldByName("cod_good")->AsString+";";   					   //id позиции меню
 			msg += ReplaceComma(FloatToStr(av_cost_price));                  		       //себестоимость
 
-			WriteToFile("cost.csv",msg.Trim());
+			WriteToFileDelayed("cost.csv",msg.Trim());
 		}
 
 		UniQuery1->Next();
 	}
+	Synchronize(&UpdateCaption);
+	WriteToFileDelayed_WriteBufferLeftOvers();
 
 	message = "End cost (Себестоимость)";
 	Synchronize(&UpdateCaption2);
@@ -3466,13 +3489,59 @@ void ThreadQuery::WriteToFile(UnicodeString NameFile,UnicodeString msg)
 	file.close();
 
 }
+// !!!! Обязательно при использовании этой функции в конце цикла вызывать WriteToFileDelay_WriteBufferLeftOvers
+//      Иначе может потеряться Big Data
+ void ThreadQuery::WriteToFileDelayed(UnicodeString NameFile,UnicodeString msg)
+{
+	file_name_prev = NameFile;
+
+	if(file_msg_buffer != "")
+		file_msg_buffer += "\n";
+
+	file_msg_buffer += msg;
+
+	file_msg_count++;
+	if(file_msg_count > file_msg_max)
+	{
+		WriteToFile(NameFile, file_msg_buffer);
+		file_msg_buffer = "";
+		file_msg_count = 0;
+	}
+}
+ void ThreadQuery::WriteToFileDelayed_WriteBufferLeftOvers()
+{
+	if(file_name_prev != "")
+	{   if(file_msg_buffer != "")
+			WriteToFile(file_name_prev, file_msg_buffer);
+    	file_msg_buffer = "";
+		file_name_prev = "";
+		file_msg_count = 0;
+	}
+}
 //---------------------------------------------------------------------------
 void __fastcall ThreadQuery::UpdateCaption()
 {
    Form1->Edit1->Text = IntToStr(CountRecord);
 }
+void __fastcall ThreadQuery::UpdateCaptionDelay()
+{
+   caption_now_redraw_ms = MilliSecondOf(Now());
+   if(caption_now_redraw_ms > caption_prev_redraw_ms + caption_rewraw_delay_ms
+		||
+	  caption_now_redraw_ms < caption_prev_redraw_ms)
+   {
+		Form1->Edit1->Text = IntToStr(CountRecord);
+		caption_prev_redraw_ms = caption_now_redraw_ms;
+   }
+}
 //---------------------------------------------------------------------------
 void __fastcall ThreadQuery::UpdateCaption2()
+{
+   UnicodeString msg  =Now().FormatString("DD/MM/YYYY HH:mm:SS")+"     "+message;
+   Form1->Memo1->Lines->Add(message);
+   WriteToFile("Log MOZG.txt",msg);
+}
+void __fastcall ThreadQuery::UpdateCaption2NoLog()
 {
    Form1->Memo1->Lines->Add(message);
 }

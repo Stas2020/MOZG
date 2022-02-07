@@ -136,10 +136,21 @@ private:
 
     TStringList *list_group_menu;
 
+	unsigned short caption_prev_redraw_ms = 0;
+	unsigned short caption_now_redraw_ms = 0;
+	const unsigned short caption_rewraw_delay_ms = 64; // Перерисовывать caption1 не чаще 64мс
+
+	UnicodeString file_msg_buffer = ""; // Накопитель строк - буфер
+	UnicodeString file_name_prev = ""; // Предыдущее имя файла
+	int file_msg_count = 0; // Сколько строк в буфере
+	const int file_msg_max = 500; // Макс размер буффера (строк)
+
 	int CountRecord;
 	UnicodeString message;
 	void __fastcall UpdateCaption();
+	void __fastcall UpdateCaptionDelay();
 	void __fastcall UpdateCaption2();
+	void __fastcall UpdateCaption2NoLog();
 
 	void cot(); //Типы заказа
 	void cot_aeroport();
@@ -203,6 +214,9 @@ private:
 	bool ConnectSQL2();
 
 	void WriteToFile(UnicodeString NameFile, UnicodeString msg);
+	void WriteToFileDelayed(UnicodeString NameFile, UnicodeString msg);
+	void WriteToFileDelayed_WriteBufferLeftOvers();
+
 	UnicodeString AddTime(UnicodeString Time, int Interval);
 	UnicodeString AddDateTime(UnicodeString Date,UnicodeString Time);
 
@@ -235,6 +249,7 @@ public:
 		bool Close;
 		UnicodeString type_export;
 		bool no_guest;
+		bool no_cost;
 
 	__fastcall ThreadQuery(bool CreateSuspended);
 };
