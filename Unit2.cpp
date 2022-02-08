@@ -336,22 +336,27 @@ void ThreadQuery::SetTypeOrder(TCheck *check)
 {
 	if ((check->NumTable >= 231 && check->NumTable <= 240) || (check->NumTable >= 900 && check->NumTable <= 909))
 	{
-	   check->TypeOrder = 1;  //Яндекс еда
+	   check->TypeOrder = 1;  ////Яндекс еда
 	   return;
 	}
 	if (check->NumTable >= 169 && check->NumTable <= 173)
 	{
-	   check->TypeOrder = 1;  //Яндекс еда
+	   check->TypeOrder = 1;  ////Яндекс еда
 	   return;
 	}
-	if (check->NumTable >= 200 && check->NumTable <= 209)
+	if (check->NumTable >= 200 && check->NumTable <= 207)
 	{
-	   check->TypeOrder = 2;  //Delivery club
+	   check->TypeOrder = 2;  ////Delivery club
+	   return;
+	}
+	if (check->NumTable >= 208 && check->NumTable <= 209)
+	{
+	   check->TypeOrder = 2;  ////Delivery club самовывоз
 	   return;
 	}
 	if (check->NumTable >= 245 && check->NumTable <= 245)
 	{
-	   check->TypeOrder = 3;  //Поднеси
+	   check->TypeOrder = 3;  ////Поднеси
 	   return;
 	}
 
@@ -364,47 +369,51 @@ void ThreadQuery::SetTypeOrder(TCheck *check)
     //-----------NEW---------------------------------
 	if (check->NumTable >= 177 && check->NumTable <= 179)
 	{
-	   check->TypeOrder = 7;  //Домиленд
+	   check->TypeOrder = 7;  ////Домиленд
 	   return;
 	}
 	if (check->NumTable >= 174 && check->NumTable <= 176)
 	{
-	   check->TypeOrder = 8;  //Myply
+	   check->TypeOrder = 8;  ////Myply
 	   return;
 	}
 	if (check->NumTable >= 163 && check->NumTable <= 168)
 	{
-	   check->TypeOrder = 9;  //Яндекс-еда самовынос
+	   check->TypeOrder = 9;  ////Яндекс-еда самовынос
 	   return;
 	}
 	if (check->NumTable >= 180 && check->NumTable <= 184)
 	{
-	   check->TypeOrder = 10;  //Доставка с сайта  Пешком
+	   check->TypeOrder = 10;  ////Доставка с сайта  Пешком
 	   return;
 	}
-	if (check->NumTable >= 185 && check->NumTable <= 195)
+	if ((check->NumTable >= 185 && check->NumTable <= 195)
+	 || (check->NumTable >= 920 && check->NumTable <= 929)
+	 || (check->NumTable >= 951 && check->NumTable <= 960))
 	{
-	   check->TypeOrder = 11;  //Доставка с сайта  Автомобиль
+	   check->TypeOrder = 11;  ////Доставка с сайта  Автомобиль
 	   return;
 	}
-	if (check->NumTable >= 196 && check->NumTable <= 199)
+	if ((check->NumTable >= 196 && check->NumTable <= 199)
+	  ||(check->NumTable >= 930 && check->NumTable <= 934)
+	  ||(check->NumTable >= 935 && check->NumTable <= 940))
 	{
-	   check->TypeOrder = 12;  //Доставка с сайта  Самовынос
+	   check->TypeOrder = 12;  ////Доставка с сайта  Самовынос
 	   return;
 	}
 	if (check->NumTable >= 221 && check->NumTable <= 224)
 	{
-	   check->TypeOrder = 13;  //Звонок гостя, Доставка пешком
+	   check->TypeOrder = 13;  ////Звонок гостя, Доставка пешком
 	   return;
 	}
 	if (check->NumTable >= 215 && check->NumTable <= 220)
 	{
-	   check->TypeOrder = 14;  //Звонок гостя, Доставка авто
+	   check->TypeOrder = 14;  ////Звонок гостя, Доставка авто
 	   return;
 	}
 	if (check->NumTable >= 146 && check->NumTable <= 150)
 	{
-	   check->TypeOrder = 15;  //Звонок гостя, Самовынос
+	   check->TypeOrder = 15;  ////Звонок гостя, Самовынос
 	   return;
 	}
 	if (check->NumTable >= 210 && check->NumTable <= 213)
@@ -444,16 +453,27 @@ void ThreadQuery::SetTypeOrder(TCheck *check)
 	}
 	if (check->NumTable >= 246 && check->NumTable <= 248)
 	{
-	   check->TypeOrder = 21;  //старый тип ASAP Новый Кофе по пути
+	   check->TypeOrder = 21;  ////старый тип ASAP Новый Кофе по пути
 	   return;
 	}
 
-	if (check->NumTable >= 920 && check->NumTable <= 929)
+	//if (check->NumTable >= 920 && check->NumTable <= 929)
+	//{
+	//   check->TypeOrder = 23;  //Интернет магазин (Филиас-онлайн)
+	//   return;
+	//}
+
+	if (check->NumTable >= 941 && check->NumTable <= 944)   // Added 08.02
 	{
-	   check->TypeOrder = 23;  //Интернет магазин (Филиас-онлайн)
+	   check->TypeOrder = 25;  ////мир сити
 	   return;
 	}
 
+	if (check->NumTable >= 945 && check->NumTable <= 950)   // Added 08.02
+	{
+	   check->TypeOrder = 27;  ////Бронибой
+	   return;
+	}
 
 	//Только для Весны
 	if (check->NumShop == 270 && (check->NumTable >= 72 && check->NumTable <= 78))
@@ -595,10 +615,24 @@ void ThreadQuery::cot()
 	list_typeorder->push_back(typeorder);
 
 
- 	typeorder = new TTypeOrder();
+	typeorder = new TTypeOrder();
 	typeorder->id = 26;
 	typeorder->Name = "Без Тарелок";
 	list_typeorder->push_back(typeorder);
+
+
+	typeorder = new TTypeOrder();
+	typeorder->id = 26;
+	typeorder->Name = "Без Тарелок";
+	list_typeorder->push_back(typeorder);
+
+	// Added 08.02
+	typeorder = new TTypeOrder();
+	typeorder->id = 27;
+	typeorder->Name = "Бронибой";
+	list_typeorder->push_back(typeorder);
+	// End of Added 08.02
+
 
 	message = "write file cot";
 	Synchronize(&UpdateCaption2);
@@ -2844,53 +2878,56 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 
 	if ( (idTable >= 231 && idTable <= 240) || ((idTable >= 900 && idTable <= 909)) || ((idTable >= 169 && idTable <= 173)))
 	{
-	   Type = 1;   //Яндекс еда
+	   Type = 1;   ////Яндекс еда
 	}
-    if (idTable >= 200 && idTable <= 209)
-	//if (idTable >= 208 && idTable <= 209)
+	if (idTable >= 200 && idTable <= 207)
 	{
-	   Type = 2; //Delivery club самовывоз
+	   Type = 2; ////Delivery club
+	}
+	if (idTable >= 208 && idTable <= 209)
+	{
+	   Type = 2; ////Delivery club самовывоз
 	}
 	if (idTable >= 245 && idTable <= 245)
 	{
-	   Type = 3; //Поднеси
+	   Type = 3; ////Поднеси
 	}
 
 	if (idTable >= 177 && idTable <= 179)
 	{
-	   Type = 7;  //Домиленд
+	   Type = 7;  ////Домиленд
 	}
 	if (idTable >= 174 && idTable <= 176)
 	{
-	   Type = 8;  //Myply
+	   Type = 8;  ////Myply
 	}
 	if (idTable >= 163 && idTable <= 168)
 	{
-	   Type = 9;  //Яндекс-еда самовынос
+	   Type = 9;  ////Яндекс-еда самовынос
 	}
 	if (idTable >= 180 && idTable <= 184)
 	{
-	   Type = 10;  //Доставка с сайта  Пешком
+	   Type = 10;  ////Доставка с сайта  Пешком
 	}
 	if ((idTable >= 185 && idTable <= 195) || (idTable >= 920 && idTable <= 929) || (idTable >= 951 && idTable <= 960))
 	{
-	   Type = 11;  //Доставка с сайта  Автомобиль
+	   Type = 11;  ////Доставка с сайта  Автомобиль
 	}
 	if ((idTable >= 196 && idTable <= 199) || (idTable >= 930 && idTable <= 934)  || (idTable >= 935 && idTable <= 940) )
 	{
-	   Type = 12;  //Доставка с сайта  Самовынос
+	   Type = 12;  ////Доставка с сайта  Самовынос
 	}
 	if (idTable >= 221 && idTable <= 224)
 	{
-	   Type = 13;  //Звонок гостя, Доставка пешком
+	   Type = 13;  ////Звонок гостя, Доставка пешком
 	}
 	if (idTable >= 215 && idTable <= 220)
 	{
-	   Type = 14;  //Звонок гостя, Доставка авто
+	   Type = 14;  ////Звонок гостя, Доставка авто
 	}
 	if (idTable >= 146 && idTable <= 150)
 	{
-	   Type = 15;  //Звонок гостя, Самовынос
+	   Type = 15;  ////Звонок гостя, Самовынос
 	}
 	if (idTable >= 210 && idTable <= 213)
 	{
@@ -2914,7 +2951,7 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	}
 	if (idTable >= 246 && idTable <= 248)
 	{
-	   Type = 21;  //ASAP
+	   Type = 21;  ////ASAP (теперь КофеПопути)
 	}
 
 	if (CheckTableOfVeranda(idTable,idShop))
@@ -2924,10 +2961,10 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 
 
     // New
-	if (idTable >= 951 && idTable <= 960)
-	{
-	   Type = 23;  //Интернет магазин (Филиас-онлайн)
-	}
+	//if (idTable >= 951 && idTable <= 960)
+	//{
+	//   Type = 23;  //Интернет магазин (Филиас-онлайн)
+	//}
 
 
 	if (CheckTableOfBar(idTable,idShop))
@@ -2935,9 +2972,15 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	   Type = 24;  //Бар
 	}
 
-	if (idTable >= 941 && idTable <= 942)
+	//if (idTable >= 941 && idTable <= 942)
+	if (idTable >= 941 && idTable <= 944)
 	{
-	   Type = 25;  //мир сити
+	   Type = 25;  ////мир сити
+	}
+
+	if (idTable >= 945 && idTable <= 950)      // Added 08.02
+	{
+	   Type = 27;  ////Бронибой
 	}
 
 
