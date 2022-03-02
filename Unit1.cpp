@@ -59,6 +59,10 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 	TryStrToBool(str_no_guest,no_guest);
 	tq->no_guest = no_guest;
 
+	bool no_cost = false;
+	TryStrToBool(str_no_cost,no_cost);
+	tq->no_cost = no_cost;
+
 	tq->Start();
 
 	if (type_export == "aeroport")

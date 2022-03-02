@@ -40,6 +40,7 @@ public:		// User declarations
 	UnicodeString ShieldingMes(UnicodeString mes);
 	UnicodeString type_export;
 	UnicodeString str_no_guest;
+	UnicodeString str_no_cost;
 
 
 };

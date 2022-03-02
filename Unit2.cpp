@@ -967,6 +967,18 @@ UnicodeString ThreadQuery::ConvertShopNum(int value)
 	{
 		return "104";
 	}
+	if (value == 331)
+	{
+		return "311";
+	}
+	if (value == 242)
+	{
+		return "300";
+	}
+	if (value == 244)
+	{
+		return "231";
+	}
 	return IntToStr(value);
 }
 //---------------------------------------------------------------------------
@@ -995,6 +1007,18 @@ UnicodeString ThreadQuery::ConvertShopNum(UnicodeString value)
 	if (value == "124")
 	{
 		return "104";
+	}
+	if (value == "331")
+	{
+		return "311";
+	}
+	if (value == "242")
+	{
+		return "300";
+	}
+	if (value == "244")
+	{
+		return "231";
 	}
 	return value;
 
@@ -2225,7 +2249,8 @@ UnicodeString ThreadQuery::GetListShop()
 
 	}
 
-	result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124";
+	//result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124";// OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244";
+    result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124 OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244";
 	return  result;
 }
 //---------------------------------------------------------------------------
@@ -2247,7 +2272,8 @@ UnicodeString ThreadQuery::GetListShop(UnicodeString Name_field)
 
 	}
 
-	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124";
+	//	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124";// OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244";
+	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124 OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244";
 	return  result;
 }
 //---------------------------------------------------------------------------
@@ -2550,6 +2576,19 @@ void ThreadQuery::empl() //—отрудники
 
 	}
 
+		// —лужебный код - 1111
+		UnicodeString msg;
+
+			msg = "";
+			msg += "1;"+ 															//id базы данных
+			msg += "1111;"+   			//id сотрудника
+			msg += "—лужебный код 1111;"+   														//им€ сотрудника
+			msg += "3;";   														    //статус
+			msg += "0;"; 	        //id ресторана
+			msg += "1111"; 		        //код сотрудника
+
+			WriteToFile("empl.csv",msg.Trim());
+
 	message = "End  empl (—отрудники)";
 	Synchronize(&UpdateCaption2);
 }
@@ -2661,7 +2700,8 @@ void ThreadQuery::hall() // «алы
 	std::vector<TPairData> list_new_cat;
 	std::vector<TPairData> list_new_cat2;
 	std::vector<TPairData> list_new_cat3;
-    std::vector<TPairData> list_new_cat4;
+	std::vector<TPairData> list_new_cat4;
+	std::vector<TPairData> list_new_cat5;
 
 
 	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
@@ -2708,6 +2748,14 @@ void ThreadQuery::hall() // «алы
 				int id_t = (*it_typeorder)->id;
 				UnicodeString name_type_oper = (*it_typeorder)->Name;
 				list_new_cat4.push_back(std::pair<int,UnicodeString>(id_t,name_type_oper));
+				continue;
+			}
+
+			if ((*it_typeorder)->id == 27 )//чтоб id залов не изменилось перенесем новые в конец
+			{
+				int id_t = (*it_typeorder)->id;
+				UnicodeString name_type_oper = (*it_typeorder)->Name;
+				list_new_cat5.push_back(std::pair<int,UnicodeString>(id_t,name_type_oper));
 				continue;
 			}
 
@@ -2832,13 +2880,50 @@ void ThreadQuery::hall() // «алы
 
 	}
 
-     	// Ќовые залы переместим в конец списка чтоб у старых не сбилась нумераци€
+		// Ќовые залы переместим в конец списка чтоб у старых не сбилась нумераци€
 	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
 	{
 		std::pair<int,UnicodeString> item;
 		try
 		{
 			item = list_new_cat4.at(0);
+		}
+		catch (...)
+		{
+			continue;
+		}
+
+
+		UnicodeString msg = "";
+		msg += "1;";   						   													//id базы данных
+		msg += IntToStr(idx)+";";     															//id зала
+		msg += item.second + " " + (*it_shop)->NameShop +";";                                   //название зала
+		msg += "3;";   																			//статус
+		msg += IntToStr((*it_shop)->NumShop)+";";   									        //id ресторана
+		msg += "0;";   																	        //пор€док сортировки
+		msg += IntToStr((*it_shop)->NumShop)+";";                                               //id подразделени€
+		msg += "0";                                                                             //вместимость гостей
+
+
+		WriteToFile("hall.csv",msg.Trim());
+		idx++;
+
+		THall *hall = new THall();
+		hall->id = item.first;
+		hall->Name = item.second;
+		hall->NumShop = (*it_shop)->NumShop;
+		ListHall->Add(hall);
+
+	}
+
+
+         	// Ќовые залы переместим в конец списка чтоб у старых не сбилась нумераци€
+	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
+	{
+		std::pair<int,UnicodeString> item;
+		try
+		{
+			item = list_new_cat5.at(0);
 		}
 		catch (...)
 		{
