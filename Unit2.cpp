@@ -475,6 +475,12 @@ void ThreadQuery::SetTypeOrder(TCheck *check)
 	   return;
 	}
 
+	if (check->NumTable >= 961 && check->NumTable <= 965)   // Added 26.04.22
+	{
+	   check->TypeOrder = 28;  ////Не интернет магазин
+	   return;
+	}
+
 	//Только для Весны
 	if (check->NumShop == 270 && (check->NumTable >= 72 && check->NumTable <= 78))
 	{
@@ -633,6 +639,12 @@ void ThreadQuery::cot()
 	list_typeorder->push_back(typeorder);
 	// End of Added 08.02
 
+	// Added 08.02
+	typeorder = new TTypeOrder();
+	typeorder->id = 28;
+	typeorder->Name = "Не Интернет магазин";
+	list_typeorder->push_back(typeorder);
+	// End of Added 08.02
 
 	message = "write file cot";
 	Synchronize(&UpdateCaption2);
@@ -780,115 +792,115 @@ void ThreadQuery::GetAllGuestFromDb()
 	while(!done)
 	{
 
-	// debug
-	message = "CUBE request executing. Dates:   "+StartDTFrag.FormatString("DD/MM/YYYY")+" - "+EndDTFrag.FormatString("DD/MM/YYYY");
-	Synchronize(&UpdateCaption2NoLog);
-	// debug
+		// debug
+		message = "CUBE request executing. Dates:   "+StartDTFrag.FormatString("DD/MM/YYYY")+" - "+EndDTFrag.FormatString("DD/MM/YYYY");
+		Synchronize(&UpdateCaption2NoLog);
+		// debug
 
 
-	UniQuery2->SQL->Clear();
-	UniQuery2->SQL->Add("SELECT Guests, TableId, Depnum, BusinessDate FROM [Diogen].[dbo].[GuestCount]");
-	UniQuery2->SQL->Add("WHERE ("+GetListShop("Depnum")+") AND BusinessDate >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND BusinessDate <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
-	UniQuery2->SQL->Add("ORDER BY BusinessDate, Depnum"); //Сортировка не нужна ???
-	UniQuery2->Execute();
+		UniQuery2->SQL->Clear();
+		UniQuery2->SQL->Add("SELECT Guests, TableId, Depnum, BusinessDate FROM [Diogen].[dbo].[GuestCount]");
+		UniQuery2->SQL->Add("WHERE ("+GetListShop("Depnum")+") AND BusinessDate >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND BusinessDate <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
+		UniQuery2->SQL->Add("ORDER BY BusinessDate, Depnum"); //Сортировка не нужна ???
+		UniQuery2->Execute();
 
-	CountRecord = UniQuery2->RecordCount;
-	message = "Count record: " + IntToStr(CountRecord);
-	Synchronize(&UpdateCaption2NoLog);
+		CountRecord = UniQuery2->RecordCount;
+		message = "Count record: " + IntToStr(CountRecord);
+		Synchronize(&UpdateCaption2NoLog);
 
-	// ListDateTime = new TListDateTime(); Перемещено вверх
+		// ListDateTime = new TListDateTime(); Перемещено вверх
 
 
-	if (true) {
+		if (true) {
 
-	}
-
-	int CountResult = 0;
-	while (!UniQuery2->Eof)
-	{
-		int CountGuests = abs(UniQuery2->FieldByName("Guests")->AsInteger);
-		int TableId = UniQuery2->FieldByName("TableId")->AsInteger;
-		int Depnum = UniQuery2->FieldByName("Depnum")->AsInteger;
-		TDateTime BusinessDate = UniQuery2->FieldByName("BusinessDate")->AsDateTime;
-
-		if (CountGuests > 20 || CountGuests == 0 || CountGuests < 0)
-		{
-            CountGuests = 1;
 		}
 
-
-
-		TListDateTime::iterator it =  ListDateTime->find(BusinessDate);
-
-		if (it == ListDateTime->end())
+		int CountResult = 0;
+		while (!UniQuery2->Eof)
 		{
-		   TListGuestOfTebleId *ListGuestOfTebleId  = new TListGuestOfTebleId();
-		   ListGuestOfTebleId->insert(std::pair <int,int>(TableId,CountGuests));
+			int CountGuests = abs(UniQuery2->FieldByName("Guests")->AsInteger);
+			int TableId = UniQuery2->FieldByName("TableId")->AsInteger;
+			int Depnum = UniQuery2->FieldByName("Depnum")->AsInteger;
+			TDateTime BusinessDate = UniQuery2->FieldByName("BusinessDate")->AsDateTime;
 
-		   if (CountGuests > 1) {
-			  CountResult++;
-		   }
+			if (CountGuests > 20 || CountGuests == 0 || CountGuests < 0)
+			{
+				CountGuests = 1;
+			}
 
-		   TListDepNum *ListDepNum = new TListDepNum();
-		   ListDepNum->insert(std::pair <int,TListGuestOfTebleId*>(Depnum,ListGuestOfTebleId));
 
-		   ListDateTime->insert(std::pair <TDateTime,TListDepNum*>(BusinessDate,ListDepNum));
-		}
-		else
-		{
-		   TListDepNum *ListDepNum =  ListDateTime->operator [](BusinessDate);
 
-		   TListDepNum::iterator itdn =  ListDepNum->find(Depnum);
-		   if (itdn == ListDepNum->end())
-		   {
-				TListGuestOfTebleId *ListGuestOfTebleId  = new TListGuestOfTebleId();
-				ListGuestOfTebleId->insert(std::pair <int,int>(TableId,CountGuests));
-				if (CountGuests > 1) {
-					CountResult++;
-				}
-				ListDepNum->insert(std::pair <int,TListGuestOfTebleId*>(Depnum,ListGuestOfTebleId));
+			TListDateTime::iterator it =  ListDateTime->find(BusinessDate);
 
-		   }
-		   else
-		   {
-			   TListGuestOfTebleId *ListGuestOfTebleId =  ListDepNum->operator [](Depnum);
+			if (it == ListDateTime->end())
+			{
+			   TListGuestOfTebleId *ListGuestOfTebleId  = new TListGuestOfTebleId();
+			   ListGuestOfTebleId->insert(std::pair <int,int>(TableId,CountGuests));
 
-			   TListGuestOfTebleId::iterator itti =  ListGuestOfTebleId->find(TableId);
+			   if (CountGuests > 1) {
+				  CountResult++;
+			   }
 
-				if (itti == ListGuestOfTebleId->end())
-				{
+			   TListDepNum *ListDepNum = new TListDepNum();
+			   ListDepNum->insert(std::pair <int,TListGuestOfTebleId*>(Depnum,ListGuestOfTebleId));
+
+			   ListDateTime->insert(std::pair <TDateTime,TListDepNum*>(BusinessDate,ListDepNum));
+			}
+			else
+			{
+			   TListDepNum *ListDepNum =  ListDateTime->operator [](BusinessDate);
+
+			   TListDepNum::iterator itdn =  ListDepNum->find(Depnum);
+			   if (itdn == ListDepNum->end())
+			   {
+					TListGuestOfTebleId *ListGuestOfTebleId  = new TListGuestOfTebleId();
 					ListGuestOfTebleId->insert(std::pair <int,int>(TableId,CountGuests));
 					if (CountGuests > 1) {
 						CountResult++;
 					}
-				}
-		   }
+					ListDepNum->insert(std::pair <int,TListGuestOfTebleId*>(Depnum,ListGuestOfTebleId));
+
+			   }
+			   else
+			   {
+				   TListGuestOfTebleId *ListGuestOfTebleId =  ListDepNum->operator [](Depnum);
+
+				   TListGuestOfTebleId::iterator itti =  ListGuestOfTebleId->find(TableId);
+
+					if (itti == ListGuestOfTebleId->end())
+					{
+						ListGuestOfTebleId->insert(std::pair <int,int>(TableId,CountGuests));
+						if (CountGuests > 1) {
+							CountResult++;
+						}
+					}
+			   }
+			}
+
+
+			CountRecord--;
+			Synchronize(&UpdateCaptionDelay);
+
+			UniQuery2->Next();
 		}
 
+		Synchronize(&UpdateCaption);
 
-		CountRecord--;
-		Synchronize(&UpdateCaptionDelay);
-
-		UniQuery2->Next();
-	}
-
-	Synchronize(&UpdateCaption);
-
-	message = "CountResult > 2:    " + IntToStr(CountResult);
-	Synchronize(&UpdateCaption2NoLog);
+		message = "CountResult > 2:    " + IntToStr(CountResult);
+		Synchronize(&UpdateCaption2NoLog);
 
 
-	if(EndDTFrag >= EndDT)
-	{
-		done = true;
-	}
-	else
-	{
-		StartDTFrag = IncDay(EndDTFrag, 1);
-		EndDTFrag = IncDay(StartDTFrag, MaxDayCount);
 		if(EndDTFrag >= EndDT)
-			EndDTFrag = IncDay(EndDT, 0);
-	}
+		{
+			done = true;
+		}
+		else
+		{
+			StartDTFrag = IncDay(EndDTFrag, 1);
+			EndDTFrag = IncDay(StartDTFrag, MaxDayCount);
+			if(EndDTFrag >= EndDT)
+				EndDTFrag = IncDay(EndDT, 0);
+		}
 
 
 
@@ -2702,7 +2714,7 @@ void ThreadQuery::hall() // Залы
 	std::vector<TPairData> list_new_cat3;
 	std::vector<TPairData> list_new_cat4;
 	std::vector<TPairData> list_new_cat5;
-
+	std::vector<TPairData> list_new_cat6;
 
 	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
 	{
@@ -2756,6 +2768,14 @@ void ThreadQuery::hall() // Залы
 				int id_t = (*it_typeorder)->id;
 				UnicodeString name_type_oper = (*it_typeorder)->Name;
 				list_new_cat5.push_back(std::pair<int,UnicodeString>(id_t,name_type_oper));
+				continue;
+			}
+
+			if ((*it_typeorder)->id == 28 )//чтоб id залов не изменилось перенесем новые в конец
+			{
+				int id_t = (*it_typeorder)->id;
+				UnicodeString name_type_oper = (*it_typeorder)->Name;
+				list_new_cat6.push_back(std::pair<int,UnicodeString>(id_t,name_type_oper));
 				continue;
 			}
 
@@ -2917,13 +2937,49 @@ void ThreadQuery::hall() // Залы
 	}
 
 
-         	// Новые залы переместим в конец списка чтоб у старых не сбилась нумерация
+			// Новые залы переместим в конец списка чтоб у старых не сбилась нумерация
 	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
 	{
 		std::pair<int,UnicodeString> item;
 		try
 		{
 			item = list_new_cat5.at(0);
+		}
+		catch (...)
+		{
+			continue;
+		}
+
+
+		UnicodeString msg = "";
+		msg += "1;";   						   													//id базы данных
+		msg += IntToStr(idx)+";";     															//id зала
+		msg += item.second + " " + (*it_shop)->NameShop +";";                                   //название зала
+		msg += "3;";   																			//статус
+		msg += IntToStr((*it_shop)->NumShop)+";";   									        //id ресторана
+		msg += "0;";   																	        //порядок сортировки
+		msg += IntToStr((*it_shop)->NumShop)+";";                                               //id подразделения
+		msg += "0";                                                                             //вместимость гостей
+
+
+		WriteToFile("hall.csv",msg.Trim());
+		idx++;
+
+		THall *hall = new THall();
+		hall->id = item.first;
+		hall->Name = item.second;
+		hall->NumShop = (*it_shop)->NumShop;
+		ListHall->Add(hall);
+
+	}
+
+         	// Новые залы переместим в конец списка чтоб у старых не сбилась нумерация
+	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
+	{
+		std::pair<int,UnicodeString> item;
+		try
+		{
+			item = list_new_cat6.at(0);
 		}
 		catch (...)
 		{
@@ -3068,6 +3124,10 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	   Type = 27;  ////Бронибой
 	}
 
+	if (idTable >= 961 && idTable <= 965)      // Added 26.04
+	{
+	   Type = 28;  ////Не интернет магазин
+	}
 
 	if ((idTable >= 100 && idTable <= 102) || (idTable >= 104 && idTable <= 107))
 	{
