@@ -991,6 +991,14 @@ UnicodeString ThreadQuery::ConvertShopNum(int value)
 	{
 		return "231";
 	}
+	if (value == 301)
+	{
+		return "380";
+	}
+	if (value == 302)
+	{
+		return "270";
+	}
 	return IntToStr(value);
 }
 //---------------------------------------------------------------------------
@@ -1031,6 +1039,14 @@ UnicodeString ThreadQuery::ConvertShopNum(UnicodeString value)
 	if (value == "244")
 	{
 		return "231";
+	}
+	if (value == "301")
+	{
+		return "380";
+	}
+	if (value == "302")
+	{
+		return "270";
 	}
 	return value;
 
