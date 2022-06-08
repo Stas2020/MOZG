@@ -488,6 +488,20 @@ void ThreadQuery::SetTypeOrder(TCheck *check)
 		return;
 	}
 
+	if (check->NumTable == 970 )   // Added 8.08.22
+	{
+	   check->TypeOrder = 29;  ////Заказ на стол через ИМ
+	   return;
+	}
+
+	//Только для Усачева
+	if (check->NumShop == 285 && (check->NumTable >= 330 && check->NumTable <= 336))
+	{
+		check->TypeOrder = 26;  //Усачева Без Тарелок
+		return;
+	}
+
+
 	check->TypeOrder = 6;  //Остальные продажи
 }
 //---------------------------------------------------------------------------
@@ -627,11 +641,6 @@ void ThreadQuery::cot()
 	list_typeorder->push_back(typeorder);
 
 
-	typeorder = new TTypeOrder();
-	typeorder->id = 26;
-	typeorder->Name = "Без Тарелок";
-	list_typeorder->push_back(typeorder);
-
 	// Added 08.02
 	typeorder = new TTypeOrder();
 	typeorder->id = 27;
@@ -645,6 +654,13 @@ void ThreadQuery::cot()
 	typeorder->Name = "Не Интернет магазин";
 	list_typeorder->push_back(typeorder);
 	// End of Added 08.02
+
+	// Added 08.06
+	typeorder = new TTypeOrder();
+	typeorder->id = 29;
+	typeorder->Name = "Заказ на стол через ИМ";
+	list_typeorder->push_back(typeorder);
+	// End of Added 08.06
 
 	message = "write file cot";
 	Synchronize(&UpdateCaption2);
@@ -1095,120 +1111,120 @@ void ThreadQuery::order()
 	//CountRecordLast = list_order->size();
 
 
-	if (!UniQuery1->IsEmpty())
-	{
-		message = "prepare data";
-		Synchronize(&UpdateCaption2);
-
-		while (!UniQuery1->Eof)
+		if (!UniQuery1->IsEmpty())
 		{
-			CountRecord--;
-			Synchronize(&UpdateCaptionDelay);
+			message = "prepare data";
+			Synchronize(&UpdateCaption2);
 
-			TCheck *check = new TCheck();
-
-			if (type_export == "aeroport")
+			while (!UniQuery1->Eof)
 			{
-				check->NumTable = 1;
+				CountRecord--;
+				Synchronize(&UpdateCaptionDelay);
+
+				TCheck *check = new TCheck();
+
+				if (type_export == "aeroport")
+				{
+					check->NumTable = 1;
+				}
+				else
+				{
+					check->NumTable = UniQuery1->FieldByName("stol")->AsInteger;
+				}
+
+				check->NumShop = UniQuery1->FieldByName("cod_shop")->AsInteger;
+				check->idWaiter = UniQuery1->FieldByName("saleman")->AsInteger;
+				check->Start = AddTime(UniQuery1->FieldByName("dat_chek")->AsDateTime,UniQuery1->FieldByName("timer")->AsString, UniQuery1->FieldByName("action")->AsInteger);
+				check->End = ConvertToDateTime(UniQuery1->FieldByName("dat_chek")->AsDateTime,UniQuery1->FieldByName("timer")->AsString);
+				check->NumCheck = UniQuery1->FieldByName("chek_sn")->AsWideString;
+				check->BusinessDate = UniQuery1->FieldByName("business_date")->AsDateTime;
+				check->SumPayment = UniQuery1->FieldByName("sum_b")->AsFloat;
+				check->id_discount = UniQuery1->FieldByName("dk_dcod")->AsInteger;
+				check->cas_n = UniQuery1->FieldByName("cas_n")->AsWideString;
+
+				UnicodeString TableId = UniQuery1->FieldByName("comment")->AsWideString;
+
+				if (TableId != "")
+				{
+					int table_int = 0;
+					TryStrToInt(TableId,table_int);
+					check->TableId = table_int;
+				}
+				else
+				{
+					TableId = 0;
+				}
+
+
+				if (type_export == "aeroport")
+				{
+					check->CountGuest = GetCountGuestAeroport(check->BusinessDate, check->NumShop, check->TableId);
+				}
+				else
+				{
+					check->CountGuest = GetCountGuest(check->BusinessDate, check->NumShop, check->TableId);
+				}
+
+				if (check->CountGuest > 1)
+				{
+					CountGuestResult++;
+					//message = "CountGuest: " + IntToStr(check->CountGuest) + " NumShop: " + IntToStr(check->NumShop) + " TableId: " + IntToStr(check->TableId);
+					//Synchronize(&UpdateCaption2);
+				}
+
+				SetTypeOrder(check);
+
+				if (type_export == "aeroport")
+				{
+					AddCheckToOrderListAeroport(check);
+				}
+				else
+				{
+					//AddCheckToOrderList(check);   Не нужно чтобы чеки обединялись в один заказ
+					AddCheckToOrderListAeroport(check);
+				}
+
+				//AddCheckToOrderListTabId(check);
+
+				UniQuery1->Next();
+			}
+
+			Synchronize(&UpdateCaption);
+
+			message = "End prepare data";
+			Synchronize(&UpdateCaption2);
+
+			CountRecord = list_order->size();
+			message = "Count order: " + IntToStr(CountRecord);
+			Synchronize(&UpdateCaption2);
+
+
+			message = "CountGuest > 1:  " + IntToStr(CountGuestResult);
+			Synchronize(&UpdateCaption2);
+
+
+			if(EndDTFrag >= EndDT)
+			{
+				done = true;
 			}
 			else
 			{
-				check->NumTable = UniQuery1->FieldByName("stol")->AsInteger;
-			}
-
-			check->NumShop = UniQuery1->FieldByName("cod_shop")->AsInteger;
-			check->idWaiter = UniQuery1->FieldByName("saleman")->AsInteger;
-			check->Start = AddTime(UniQuery1->FieldByName("dat_chek")->AsDateTime,UniQuery1->FieldByName("timer")->AsString, UniQuery1->FieldByName("action")->AsInteger);
-			check->End = ConvertToDateTime(UniQuery1->FieldByName("dat_chek")->AsDateTime,UniQuery1->FieldByName("timer")->AsString);
-			check->NumCheck = UniQuery1->FieldByName("chek_sn")->AsWideString;
-			check->BusinessDate = UniQuery1->FieldByName("business_date")->AsDateTime;
-			check->SumPayment = UniQuery1->FieldByName("sum_b")->AsFloat;
-			check->id_discount = UniQuery1->FieldByName("dk_dcod")->AsInteger;
-			check->cas_n = UniQuery1->FieldByName("cas_n")->AsWideString;
-
-			UnicodeString TableId = UniQuery1->FieldByName("comment")->AsWideString;
-
-			if (TableId != "")
-			{
-				int table_int = 0;
-				TryStrToInt(TableId,table_int);
-				check->TableId = table_int;
-			}
-			else
-			{
-				TableId = 0;
+				StartDTFrag = IncDay(EndDTFrag, 1);
+				EndDTFrag = IncMonth(StartDTFrag, MaxMonthCount);
+				if(EndDTFrag >= EndDT)
+					EndDTFrag = IncDay(EndDT, 0);
 			}
 
 
-			if (type_export == "aeroport")
-			{
-				check->CountGuest = GetCountGuestAeroport(check->BusinessDate, check->NumShop, check->TableId);
-			}
-			else
-			{
-				check->CountGuest = GetCountGuest(check->BusinessDate, check->NumShop, check->TableId);
-			}
 
-			if (check->CountGuest > 1)
-			{
-				CountGuestResult++;
-				//message = "CountGuest: " + IntToStr(check->CountGuest) + " NumShop: " + IntToStr(check->NumShop) + " TableId: " + IntToStr(check->TableId);
-				//Synchronize(&UpdateCaption2);
-			}
-
-			SetTypeOrder(check);
-
-			if (type_export == "aeroport")
-			{
-				AddCheckToOrderListAeroport(check);
-			}
-			else
-			{
-				//AddCheckToOrderList(check);   Не нужно чтобы чеки обединялись в один заказ
-				AddCheckToOrderListAeroport(check);
-			}
-
-			//AddCheckToOrderListTabId(check);
-
-			UniQuery1->Next();
-		}
-
-		Synchronize(&UpdateCaption);
-
-		message = "End prepare data";
-		Synchronize(&UpdateCaption2);
-
-		CountRecord = list_order->size();
-		message = "Count order: " + IntToStr(CountRecord);
-		Synchronize(&UpdateCaption2);
+		} // End of DATETIME fragment cycle
 
 
-		message = "CountGuest > 1:  " + IntToStr(CountGuestResult);
-		Synchronize(&UpdateCaption2);
 
-
-	if(EndDTFrag >= EndDT)
-	{
-		done = true;
 	}
-	else
-	{
-		StartDTFrag = IncDay(EndDTFrag, 1);
-		EndDTFrag = IncMonth(StartDTFrag, MaxMonthCount);
-		if(EndDTFrag >= EndDT)
-			EndDTFrag = IncDay(EndDT, 0);
-	}
 
 
-
-	} // End of DATETIME fragment cycle
-
-
-
-	}
-
-
-			UnicodeString msg = "";
+		UnicodeString msg = "";
 		for (TListOrder::iterator it_order = list_order->begin(); it_order != list_order->end(); ++it_order)
 		{
 			CountRecord--;
@@ -2731,6 +2747,7 @@ void ThreadQuery::hall() // Залы
 	std::vector<TPairData> list_new_cat4;
 	std::vector<TPairData> list_new_cat5;
 	std::vector<TPairData> list_new_cat6;
+	std::vector<TPairData> list_new_cat7;
 
 	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
 	{
@@ -2792,6 +2809,14 @@ void ThreadQuery::hall() // Залы
 				int id_t = (*it_typeorder)->id;
 				UnicodeString name_type_oper = (*it_typeorder)->Name;
 				list_new_cat6.push_back(std::pair<int,UnicodeString>(id_t,name_type_oper));
+				continue;
+			}
+
+			if ((*it_typeorder)->id == 29 )//чтоб id залов не изменилось перенесем новые в конец
+			{
+				int id_t = (*it_typeorder)->id;
+				UnicodeString name_type_oper = (*it_typeorder)->Name;
+				list_new_cat7.push_back(std::pair<int,UnicodeString>(id_t,name_type_oper));
 				continue;
 			}
 
@@ -2989,13 +3014,49 @@ void ThreadQuery::hall() // Залы
 
 	}
 
-         	// Новые залы переместим в конец списка чтоб у старых не сбилась нумерация
+			// Новые залы переместим в конец списка чтоб у старых не сбилась нумерация
 	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
 	{
 		std::pair<int,UnicodeString> item;
 		try
 		{
 			item = list_new_cat6.at(0);
+		}
+		catch (...)
+		{
+			continue;
+		}
+
+
+		UnicodeString msg = "";
+		msg += "1;";   						   													//id базы данных
+		msg += IntToStr(idx)+";";     															//id зала
+		msg += item.second + " " + (*it_shop)->NameShop +";";                                   //название зала
+		msg += "3;";   																			//статус
+		msg += IntToStr((*it_shop)->NumShop)+";";   									        //id ресторана
+		msg += "0;";   																	        //порядок сортировки
+		msg += IntToStr((*it_shop)->NumShop)+";";                                               //id подразделения
+		msg += "0";                                                                             //вместимость гостей
+
+
+		WriteToFile("hall.csv",msg.Trim());
+		idx++;
+
+		THall *hall = new THall();
+		hall->id = item.first;
+		hall->Name = item.second;
+		hall->NumShop = (*it_shop)->NumShop;
+		ListHall->Add(hall);
+
+	}
+
+         	// Новые залы переместим в конец списка чтоб у старых не сбилась нумерация
+	for (TListShop::iterator it_shop = list_shop->begin(); it_shop != list_shop->end(); ++it_shop)
+	{
+		std::pair<int,UnicodeString> item;
+		try
+		{
+			item = list_new_cat7.at(0);
 		}
 		catch (...)
 		{
@@ -3145,9 +3206,14 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	   Type = 28;  ////Не интернет магазин
 	}
 
-	if ((idTable >= 100 && idTable <= 102) || (idTable >= 104 && idTable <= 107))
+	if ((idTable >= 100 && idTable <= 102) || (idTable >= 104 && idTable <= 107) || (idTable >= 330 && idTable <= 336))
 	{
 	   Type = 26;  //Без Тарелок
+	}
+
+	if (idTable == 970 )      // Added 8.06
+	{
+	   Type = 29;  ////Заказ на стол через ИМ
 	}
 
 	for (int i = 0; i < ListHall->Count; i++)
@@ -3307,7 +3373,7 @@ bool ThreadQuery::CheckTableOfVeranda(int idTable, int idShop)
 		}
 		case 310 : //Ресторан Внуково Аутлет
 		{
-			if ((idTable >= 41 && idTable <= 66))
+			if ((idTable >= 41 && idTable <= 71))
 			{
 			   result = true;
 			}
@@ -3386,6 +3452,43 @@ bool ThreadQuery::CheckTableOfVeranda(int idTable, int idShop)
 			}
 			break;
 		}
+
+		case 197 : //Черемушкинский рынок
+		{
+			if ((idTable >= 41 && idTable <= 77) )
+			{
+			   result = true;
+			}
+			break;
+		}
+
+		case 198 : //Аркус
+		{
+			if ((idTable >= 72 && idTable <= 110) )
+			{
+			   result = true;
+			}
+			break;
+		}
+
+		case 193 : //Ленинский рынок
+		{
+			if ((idTable >= 27 && idTable <= 43) )
+			{
+			   result = true;
+			}
+			break;
+		}
+
+		case 237 : //Горки-2
+		{
+			if ((idTable >= 40 && idTable <= 63) )
+			{
+			   result = true;
+			}
+			break;
+		}
+
 	}
 
 	return result;
