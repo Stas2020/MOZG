@@ -2317,7 +2317,7 @@ UnicodeString ThreadQuery::GetListShop(UnicodeString Name_field)
 	}
 
 	//	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124";// OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244";
-	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124 OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244";
+	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124 OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244 OR"+ Name_field+"=301 OR " + Name_field+"=302";
 	return  result;
 }
 //---------------------------------------------------------------------------
