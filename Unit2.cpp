@@ -2294,7 +2294,7 @@ UnicodeString ThreadQuery::GetListShop()
 	}
 
 	//result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124";// OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244";
-    result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124 OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244";
+    result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124 OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244  OR chekA.cod_shop=301  OR chekA.cod_shop=302";
 	return  result;
 }
 //---------------------------------------------------------------------------
