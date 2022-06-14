@@ -2060,7 +2060,7 @@ void ThreadQuery::rest()
 
 
 	shop = new TShop();
-	shop->NumShop = 302;//270;
+	shop->NumShop = 270;
 	shop->NameShop = "Âåñíà";
 	list_shop->push_back(shop);
 
@@ -2122,7 +2122,7 @@ void ThreadQuery::rest()
 	list_shop->push_back(shop);
 
 	shop = new TShop();
-	shop->NumShop = 301;//380;
+	shop->NumShop = 380;
 	shop->NameShop = "ÃÓÌ";
 	list_shop->push_back(shop);
 
