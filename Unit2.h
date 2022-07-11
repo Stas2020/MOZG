@@ -110,6 +110,14 @@ typedef struct
 
 }TWriteoff_reason;
 
+using TMenuItem_ = struct{
+	int barcode;
+	int num_shop;
+	double price;
+};
+
+
+
 typedef std::vector<std::shared_ptr<TWriteoff_reason>> TListTWriteoff_reason;
 
 // <TableId,CountGuest>
@@ -127,6 +135,7 @@ class ThreadQuery : public TThread
 private:
 	TList *List_pbnd;
 	TList *List_pmnt;
+	std::vector<TMenuItem_>menu_items;
 
 	TListOrder *list_order;
 	TListShop *list_shop;
@@ -238,6 +247,9 @@ private:
 	void AddData_pmnt(int NumShop,TDateTime b_date, int payment_id, double payment);
 	void ShowData_pbnd();
 	void ShowData_pmnt();
+
+	void UpdateMenuItems();
+	double GetPriceItem(int num_shop, int barcode);
 
 
 

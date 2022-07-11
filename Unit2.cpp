@@ -70,6 +70,7 @@ void __fastcall ThreadQuery::Execute()
 			return;
 		}
 
+		UpdateMenuItems();
 
 		if (type_export == "aeroport")
 		{
@@ -1411,8 +1412,11 @@ void ThreadQuery::pbnd()
 					msg +=	IntToStr(id_pr)+";";   																	//id проводки внутри визита
 					msg +=	"0;";   						    													//id заказа
 					msg +=	BarCode+";";   										                                    //id позиции меню
-					msg +=	IntToStr(payment->id)+";";																//id метода оплаты
-					msg +=	ReplaceComma(FormatFloat("0.###",Quantity * payment->part * cur_price))+";";   			//цена в меню
+					msg +=	IntToStr(payment->id)+";";                                                              //id метода оплаты
+
+					//msg +=	ReplaceComma(FormatFloat("0.###",Quantity * payment->part * cur_price))+";";
+					double price_ = GetPriceItem((*it_order)->NumShop, StrToInt(BarCode));
+					msg +=	ReplaceComma(FormatFloat("0.###",Quantity * price_))+";";   			                //цена в меню
 					msg +=	ReplaceComma(FormatFloat("0.###",payment->part * netto))+";";   						//цена оплачено
 					msg +=	ReplaceComma(FormatFloat("0.###",Quantity))+";";	                                    //количество
 					msg +=	IntToStr(GetPrePayments(payment->id))+";";   											//предоплата
@@ -2060,7 +2064,7 @@ void ThreadQuery::rest()
 
 
 	shop = new TShop();
-	shop->NumShop = 302;//270;
+	shop->NumShop = 270;//270;
 	shop->NameShop = "Весна";
 	list_shop->push_back(shop);
 
@@ -2122,7 +2126,7 @@ void ThreadQuery::rest()
 	list_shop->push_back(shop);
 
 	shop = new TShop();
-	shop->NumShop = 301;//380;
+	shop->NumShop = 380;//380;
 	shop->NameShop = "ГУМ";
 	list_shop->push_back(shop);
 
@@ -3852,3 +3856,42 @@ void __fastcall ThreadQuery::UpdateCaption2NoLog()
 {
    Form1->Memo1->Lines->Add(message);
 }
+//---------------------------------------------------------------------------
+void ThreadQuery::UpdateMenuItems()
+{
+	message = "_____________________UpdateMenuItems ";
+	Synchronize(&UpdateCaption2);
+	menu_items.clear();
+
+	UniQuery2->SQL->Clear();
+	UniQuery2->SQL->Add("SELECT * FROM [Diogen].[dbo].[AlohaMenuITM]");
+	UniQuery2->Execute();
+
+	UnicodeString msg;
+	while (!UniQuery2->Eof)
+	{
+		TMenuItem_ menu_item;
+		menu_item.barcode = UniQuery2->FieldByName("ID")->AsInteger;
+		menu_item.num_shop = UniQuery2->FieldByName("Dep")->AsInteger;
+		menu_item.price = UniQuery2->FieldByName("Price")->AsFloat;
+
+		menu_items.push_back(menu_item);
+		UniQuery2->Next();
+	}
+
+
+	message = "End UpdateMenuItems";
+	Synchronize(&UpdateCaption2);
+}
+//---------------------------------------------------------------------------
+double ThreadQuery::GetPriceItem(int num_shop, int barcode)
+{
+	auto event = [num_shop,barcode]( const auto &m_item){ return (m_item.num_shop == num_shop && m_item.barcode == barcode);};
+	auto result = std::find_if(menu_items.begin(), menu_items.end(), event);
+	if (result != menu_items.end()) {
+		 return  (*result).price;
+	}
+
+    return 0;
+}
+
