@@ -2091,11 +2091,7 @@ void ThreadQuery::rest()
 
 
 	shop = new TShop();
-<<<<<<< HEAD
 	shop->NumShop = 270;//270;
-=======
-	shop->NumShop = 270;
->>>>>>> 9591a48f75db5822e3fc19a8696f5cc5f751a086
 	shop->NameShop = "Âåñíà";
 	list_shop->push_back(shop);
 
@@ -2157,11 +2153,7 @@ void ThreadQuery::rest()
 	list_shop->push_back(shop);
 
 	shop = new TShop();
-<<<<<<< HEAD
 	shop->NumShop = 380;//380;
-=======
-	shop->NumShop = 380;
->>>>>>> 9591a48f75db5822e3fc19a8696f5cc5f751a086
 	shop->NameShop = "ÃÓÌ";
 	list_shop->push_back(shop);
 
