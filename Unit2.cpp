@@ -1016,6 +1016,20 @@ UnicodeString ThreadQuery::ConvertShopNum(int value)
 	{
 		return "270";
 	}
+
+	if (value == 276)
+	{
+		return "205";
+	}
+	if (value == 277)
+	{
+		return "177";
+	}
+	if (value == 278)
+	{
+		return "390";
+	}
+
 	return IntToStr(value);
 }
 //---------------------------------------------------------------------------
@@ -1064,6 +1078,19 @@ UnicodeString ThreadQuery::ConvertShopNum(UnicodeString value)
 	if (value == "302")
 	{
 		return "270";
+	}
+
+	if (value == "276")
+	{
+		return "205";
+	}
+	if (value == "277")
+	{
+		return "177";
+	}
+	if (value == "278")
+	{
+		return "390";
 	}
 	return value;
 
@@ -2298,7 +2325,7 @@ UnicodeString ThreadQuery::GetListShop()
 	}
 
 	//result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124";// OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244";
-    result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124 OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244  OR chekA.cod_shop=301  OR chekA.cod_shop=302";
+	result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124 OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244  OR chekA.cod_shop=301  OR chekA.cod_shop=302  OR chekA.cod_shop=276  OR chekA.cod_shop=277  OR chekA.cod_shop=278";
 	return  result;
 }
 //---------------------------------------------------------------------------
@@ -2321,7 +2348,7 @@ UnicodeString ThreadQuery::GetListShop(UnicodeString Name_field)
 	}
 
 	//	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124";// OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244";
-	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124 OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244 OR "+ Name_field+"=301 OR " + Name_field+"=302";
+	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124 OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244 OR "+ Name_field+"=301 OR " + Name_field+"=302 OR "  + Name_field+"=276 OR "+ Name_field+"=277 OR " + Name_field+"=278";
 	return  result;
 }
 //---------------------------------------------------------------------------
@@ -3176,10 +3203,7 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	   Type = 21;  ////ASAP (теперь КофеПопути)
 	}
 
-	if (CheckTableOfVeranda(idTable,idShop))
-	{
-	   Type = 22;  //Веранда
-	}
+
 
 
     // New
@@ -3218,6 +3242,12 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	if (idTable == 970 )      // Added 8.06
 	{
 	   Type = 29;  ////Заказ на стол через ИМ
+	}
+
+
+	if (CheckTableOfVeranda(idTable,idShop))   //добавили в конец так как номерация столов веранды не сквозная по ресторанам
+	{
+	   Type = 22;  //Веранда
 	}
 
 	for (int i = 0; i < ListHall->Count; i++)
@@ -3385,7 +3415,7 @@ bool ThreadQuery::CheckTableOfVeranda(int idTable, int idShop)
 		}
 		case 311 : //Новая Рига Аутлет
 		{
-			if ((idTable >= 60 && idTable <= 77))
+			if ((idTable >= 78 && idTable <= 84))
 			{
 			   result = true;
 			}
@@ -3468,7 +3498,7 @@ bool ThreadQuery::CheckTableOfVeranda(int idTable, int idShop)
 
 		case 198 : //Аркус
 		{
-			if ((idTable >= 72 && idTable <= 110) )
+			if ((idTable >= 100 && idTable <= 110) )
 			{
 			   result = true;
 			}
@@ -3487,6 +3517,15 @@ bool ThreadQuery::CheckTableOfVeranda(int idTable, int idShop)
 		case 237 : //Горки-2
 		{
 			if ((idTable >= 40 && idTable <= 63) )
+			{
+			   result = true;
+			}
+			break;
+		}
+
+		case 194 : //Даниловский рынок
+		{
+			if ((idTable >= 50 && idTable <= 88) )
 			{
 			   result = true;
 			}
