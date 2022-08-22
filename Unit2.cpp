@@ -1909,7 +1909,7 @@ void ThreadQuery::item()
 
 
 	UniQuery2->SQL->Clear();
-	UniQuery2->SQL->Add("SELECT BarCode, Name, CategoryId, Weight FROM [Diogen].[dbo].[AlohaMenuItemsAll]");
+	UniQuery2->SQL->Add("SELECT [Diogen].[dbo].[AlohaMenuITM].ID AS ID, Category, [Diogen].[dbo].[AlohaMenuITM].Name AS Name, Weight FROM [Diogen].[dbo].[AlohaMenuITM] LEFT JOIN [Diogen].[dbo].[AlohaMenuItemsAll] ON ([Diogen].[dbo].[AlohaMenuItemsAll].[BarCode] = [Diogen].[dbo].[AlohaMenuITM].ID) GROUP BY [Diogen].[dbo].[AlohaMenuITM].ID, Category, [Diogen].[dbo].[AlohaMenuITM].Name, Weight");
 
 	UniQuery2->Execute();
 	CountRecord = UniQuery2->RecordCount;
@@ -1923,20 +1923,25 @@ void ThreadQuery::item()
 		while (!UniQuery2->Eof)
 		{
 
-			if (list_group_menu->IndexOf(UniQuery2->FieldByName("CategoryId")->AsString) == -1)
+			if (list_group_menu->IndexOf(UniQuery2->FieldByName("Category")->AsString) == -1)
 			{
-				message = UniQuery2->FieldByName("BarCode")->AsString + " no category: " +UniQuery2->FieldByName("CategoryId")->AsString;
+				message = UniQuery2->FieldByName("ID")->AsString + " no category: " +UniQuery2->FieldByName("Category")->AsString;
 				Synchronize(&UpdateCaption2);
 			}
 
-			int portion_ratio = UniQuery2->FieldByName("Weight")->AsInteger;
+			int portion_ratio = 1;
+			if(!UniQuery2->FieldByName("Weight")->IsNull)
+			{
+			   portion_ratio = UniQuery2->FieldByName("Weight")->AsInteger;
+            }
+
 
 			CountRecord--;
 			Synchronize(&UpdateCaption);
 			msg = "";
 			msg += "1;";													//id базы данных
-			msg += UniQuery2->FieldByName("BarCode")->AsString+";";   		//id позиции меню
-			msg += UniQuery2->FieldByName("CategoryId")->AsString+";";   	//id группы меню
+			msg += UniQuery2->FieldByName("ID")->AsString+";";   		    //id позиции меню
+			msg += UniQuery2->FieldByName("Category")->AsString+";";   	    //id группы меню
 			msg += UniQuery2->FieldByName("Name")->AsString+";";   			//название позиции меню
 			msg += "3;";   													//статус
 			msg += "0;";   													//id принтера
