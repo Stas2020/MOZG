@@ -1909,7 +1909,7 @@ void ThreadQuery::item()
 
 
 	UniQuery2->SQL->Clear();
-	UniQuery2->SQL->Add("SELECT [Diogen].[dbo].[AlohaMenuITM].ID AS ID, Category, [Diogen].[dbo].[AlohaMenuITM].Name AS Name, Weight FROM [Diogen].[dbo].[AlohaMenuITM] LEFT JOIN [Diogen].[dbo].[AlohaMenuItemsAll] ON ([Diogen].[dbo].[AlohaMenuItemsAll].[BarCode] = [Diogen].[dbo].[AlohaMenuITM].ID) GROUP BY [Diogen].[dbo].[AlohaMenuITM].ID, Category, [Diogen].[dbo].[AlohaMenuITM].Name, Weight");
+	UniQuery2->SQL->Add("SELECT [Diogen].[dbo].[AlohaMenuITM].ID AS ID, Category, [Diogen].[dbo].[AlohaMenuITM].Name AS Name, Weight FROM [Diogen].[dbo].[AlohaMenuITM] LEFT JOIN [Diogen].[dbo].[AlohaMenuItemsAll] ON ([Diogen].[dbo].[AlohaMenuItemsAll].[BarCode] = [Diogen].[dbo].[AlohaMenuITM].ID) WHERE [Dep] = 205 GROUP BY [Diogen].[dbo].[AlohaMenuITM].ID, Category, [Diogen].[dbo].[AlohaMenuITM].Name, Weight");
 
 	UniQuery2->Execute();
 	CountRecord = UniQuery2->RecordCount;
