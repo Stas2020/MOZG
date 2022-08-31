@@ -1909,7 +1909,13 @@ void ThreadQuery::item()
 
 
 	UniQuery2->SQL->Clear();
-	UniQuery2->SQL->Add("SELECT [Diogen].[dbo].[AlohaMenuITM].ID AS ID, Category, [Diogen].[dbo].[AlohaMenuITM].Name AS Name, Weight FROM [Diogen].[dbo].[AlohaMenuITM] LEFT JOIN [Diogen].[dbo].[AlohaMenuItemsAll] ON ([Diogen].[dbo].[AlohaMenuItemsAll].[BarCode] = [Diogen].[dbo].[AlohaMenuITM].ID) WHERE [Dep] = 205 GROUP BY [Diogen].[dbo].[AlohaMenuITM].ID, Category, [Diogen].[dbo].[AlohaMenuITM].Name, Weight");
+    UniQuery2->SQL->Add("SELECT t.ID, isnull(iAll.CategoryId, itm.Category) as Category, isnull(iAll.Name, itm.Name) as Name, iAll.Weight ");
+	UniQuery2->SQL->Add("FROM (SELECT Distinct itm.ID, itm.Dep as Dep FROM [Diogen].[dbo].[AlohaMenuITM] itm ");
+	UniQuery2->SQL->Add("WHERE [Dep] between(CASE WHEN (select count(*) FROM [Diogen].[dbo].[AlohaMenuITM]as it where it.Dep = 205 and it.ID = itm.ID)>0 THEN 205 ELSE (CASE WHEN (select count(*) FROM [Diogen].[dbo].[AlohaMenuITM]as it where it.Dep >= 100 and it.ID = itm.ID)>0 THEN 100 ELSE null END) END) ");
+	UniQuery2->SQL->Add("				and(CASE WHEN (select count(*) FROM [Diogen].[dbo].[AlohaMenuITM]as it where it.Dep = 205 and it.ID = itm.ID)>0 THEN 205 ELSE (CASE WHEN (select count(*) FROM [Diogen].[dbo].[AlohaMenuITM]as it where it.Dep <= 451 and it.ID = itm.ID)>0 THEN 451 ELSE null END) END) ");
+	UniQuery2->SQL->Add("UNION SELECT BarCode as ID, null as Dep FROM [Diogen].[dbo].[AlohaMenuItemsAll])as t left join [Diogen].[dbo].[AlohaMenuItemsAll] iAll on iAll.BarCode = t.ID left join [Diogen].[dbo].[AlohaMenuITM] itm on itm.ID = t.ID and itm.Dep = t.Dep ");
+	UniQuery2->SQL->Add("GROUP BY t.ID, isnull(iAll.Name, itm.Name), isnull(iAll.CategoryId, itm.Category), iAll.Weight order by t.ID ");
+
 
 	UniQuery2->Execute();
 	CountRecord = UniQuery2->RecordCount;
