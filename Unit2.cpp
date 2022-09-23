@@ -502,6 +502,12 @@ void ThreadQuery::SetTypeOrder(TCheck *check)
 		return;
 	}
 
+	//Только для Аркус
+	if (check->NumShop == 198 && (check->NumTable >= 330 && check->NumTable <= 340))
+	{
+		check->TypeOrder = 26;  //Аркус Без Тарелок
+		return;
+	}
 
 	check->TypeOrder = 6;  //Остальные продажи
 }
@@ -3250,7 +3256,7 @@ int ThreadQuery::GetIdHall(int idTable, int idShop)
 	   Type = 28;  ////Не интернет магазин
 	}
 
-	if ((idTable >= 100 && idTable <= 102) || (idTable >= 104 && idTable <= 107) || (idTable >= 330 && idTable <= 336))
+	if ((idTable >= 100 && idTable <= 102) || (idTable >= 104 && idTable <= 107) || (idTable >= 330 && idTable <= 340))
 	{
 	   Type = 26;  //Без Тарелок
 	}
