@@ -2161,12 +2161,12 @@ void ThreadQuery::rest()
 
 	shop = new TShop();
 	shop->NumShop = 370;
-	shop->NameShop = "Кутузовский";
+	shop->NameShop = "Кутузовский 17";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
 	shop->NumShop = 375;
-	shop->NameShop = "Тверская";
+	shop->NameShop = "Тверская 22";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
