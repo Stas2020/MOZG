@@ -2225,7 +2225,7 @@ void ThreadQuery::rest()
 	list_shop->push_back(shop);
 
 	shop = new TShop();
-	shop->NumShop = 128;
+	shop->NumShop = 129;
 	shop->NameShop = "Гребной канал";
 	list_shop->push_back(shop);
 
