@@ -1035,7 +1035,14 @@ UnicodeString ThreadQuery::ConvertShopNum(int value)
 	{
 		return "390";
 	}
-
+	if (value == 281)
+	{
+		return "295";
+	}
+	if (value == 282)
+	{
+		return "180";
+	}
 	return IntToStr(value);
 }
 //---------------------------------------------------------------------------
@@ -1097,6 +1104,14 @@ UnicodeString ThreadQuery::ConvertShopNum(UnicodeString value)
 	if (value == "278")
 	{
 		return "390";
+	}
+	if (value == "281")
+	{
+		return "295";
+	}
+	if (value == "282")
+	{
+		return "180";
 	}
 	return value;
 
@@ -2351,7 +2366,7 @@ UnicodeString ThreadQuery::GetListShop()
 	}
 
 	//result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124";// OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244";
-	result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124 OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244  OR chekA.cod_shop=301  OR chekA.cod_shop=302  OR chekA.cod_shop=276  OR chekA.cod_shop=277  OR chekA.cod_shop=278";
+	result+= " OR chekA.cod_shop= 191 OR chekA.cod_shop=121 OR chekA.cod_shop=123 OR chekA.cod_shop=236 OR chekA.cod_shop=239 OR chekA.cod_shop=196 OR chekA.cod_shop=114 OR chekA.cod_shop=124 OR chekA.cod_shop=331 OR chekA.cod_shop=242 OR chekA.cod_shop=244  OR chekA.cod_shop=301  OR chekA.cod_shop=302  OR chekA.cod_shop=276  OR chekA.cod_shop=277  OR chekA.cod_shop=278  OR chekA.cod_shop=281  OR chekA.cod_shop=282";
 	return  result;
 }
 //---------------------------------------------------------------------------
@@ -2374,7 +2389,7 @@ UnicodeString ThreadQuery::GetListShop(UnicodeString Name_field)
 	}
 
 	//	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124";// OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244";
-	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124 OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244 OR "+ Name_field+"=301 OR " + Name_field+"=302 OR "  + Name_field+"=276 OR "+ Name_field+"=277 OR " + Name_field+"=278";
+	result+= " OR "+Name_field+"= 191 OR "+Name_field+"=121 OR "+Name_field+"=123 OR " +Name_field+"=236 OR " + Name_field+"=239 OR " + Name_field+"=196 OR " + Name_field+"=114 OR " + Name_field+"=124 OR " + Name_field+"=331 OR " + Name_field+"=242 OR " + Name_field+"=244 OR "+ Name_field+"=301 OR " + Name_field+"=302 OR "  + Name_field+"=276 OR "+ Name_field+"=277 OR " + Name_field+"=278 OR "+ Name_field+"=281 OR " + Name_field+"=282";
 	return  result;
 }
 //---------------------------------------------------------------------------
