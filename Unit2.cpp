@@ -74,6 +74,7 @@ void __fastcall ThreadQuery::Execute()
 
 		if (type_export == "aeroport")
 		{
+			curr();  		// Методы оплат
 			rest_aeroport();// Рестораны
 			writeoff_reason2(); //справочник причин списания 1
 			writeoff();		// Списания
@@ -89,10 +90,11 @@ void __fastcall ThreadQuery::Execute()
 			empl(); 		// Сотрудники
 			table_aeroport();// Столы
 			item_size();	// Приказы (типы скидок)
-			curr();  		// Методы оплат
+
 		}
 		else
 		{
+            curr();  		// Методы оплат
 			rest();         // Рестораны
 			writeoff_reason2(); //справочник причин списания 1
 			writeoff();		// Списания
@@ -109,7 +111,7 @@ void __fastcall ThreadQuery::Execute()
 			empl(); 		// Сотрудники
 			table(); 		// Столы
 			item_size();	// Приказы (типы скидок)
-			curr();  		// Методы оплат
+
 		}
 
 
@@ -1138,26 +1140,26 @@ void ThreadQuery::order()
 
 	while(!done)
 	{
+			// debug
+		message = "SQL request executing. Dates:   "+StartDTFrag.FormatString("DD/MM/YYYY")+" - "+EndDTFrag.FormatString("DD/MM/YYYY");
+		Synchronize(&UpdateCaption2);
 		// debug
-	message = "SQL request executing. Dates:   "+StartDTFrag.FormatString("DD/MM/YYYY")+" - "+EndDTFrag.FormatString("DD/MM/YYYY");
-	Synchronize(&UpdateCaption2);
-	// debug
 
 
-	UniQuery1->SQL->Clear();
-	UniQuery1->SQL->Add("SELECT saleman, cod_shop, stol, spoolname, timer, [Action] AS action, business_date, sum_b, chek_sn, dat_chek, dk_dcod, cas_n, comment");
-	UniQuery1->SQL->Add("FROM chekA");
-	UniQuery1->SQL->Add("WHERE sum_b <> 0 AND ( "+GetListShop()+") AND business_date >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND business_date <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
-	UniQuery1->SQL->Add("ORDER BY dat_chek, timer");
-	UniQuery1->Execute();
+		UniQuery1->SQL->Clear();
+		UniQuery1->SQL->Add("SELECT saleman, cod_shop, stol, spoolname, timer, [Action] AS action, business_date, sum_b, chek_sn, dat_chek, dk_dcod, cas_n, comment");
+		UniQuery1->SQL->Add("FROM chekA");
+		UniQuery1->SQL->Add("WHERE sum_b <> 0 AND ( "+GetListShop()+") AND business_date >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND business_date <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
+		UniQuery1->SQL->Add("ORDER BY dat_chek, timer");
+		UniQuery1->Execute();
 
-	CountRecord = UniQuery1->RecordCount;
-	message = "Count checks in DB: " + IntToStr(CountRecord);
-	Synchronize(&UpdateCaption2);
+		CountRecord = UniQuery1->RecordCount;
+		message = "Count checks in DB: " + IntToStr(CountRecord);
+		Synchronize(&UpdateCaption2);
 
-	int CountGuestResult = 0;
+		int CountGuestResult = 0;
 
-	//CountRecordLast = list_order->size();
+		//CountRecordLast = list_order->size();
 
 
 		if (!UniQuery1->IsEmpty())
@@ -1190,6 +1192,12 @@ void ThreadQuery::order()
 				check->SumPayment = UniQuery1->FieldByName("sum_b")->AsFloat;
 				check->id_discount = UniQuery1->FieldByName("dk_dcod")->AsInteger;
 				check->cas_n = UniQuery1->FieldByName("cas_n")->AsWideString;
+
+
+				if (check->NumShop == 198) {
+					message = "Время начало чека: " + check->Start.FormatString("DD/MM/YYYY HH:MM") + "     Время конец чека: " + check->End.FormatString("DD/MM/YYYY HH:MM");
+					Synchronize(&UpdateCaption2);
+				}
 
 				UnicodeString TableId = UniQuery1->FieldByName("comment")->AsWideString;
 
@@ -1798,8 +1806,8 @@ void ThreadQuery::curr()
 	message = "_____________________Start curr (Методы оплат) ";
 	Synchronize(&UpdateCaption2);
 
-	UnicodeString filter_typepay[] = {13,8,25,30,21};
-	int count_f = 5;
+	UnicodeString filter_typepay[] = {13,8,25,30,21,15};
+	int count_f = 6;
 	UnicodeString filter;
 
 	for (int i = 0; i < count_f; i++)
@@ -3539,7 +3547,7 @@ bool ThreadQuery::CheckTableOfVeranda(int idTable, int idShop)
 
 		case 198 : //Аркус
 		{
-			if ((idTable >= 100 && idTable <= 110) )
+			if ((idTable >= 71 && idTable <= 110) )
 			{
 			   result = true;
 			}
