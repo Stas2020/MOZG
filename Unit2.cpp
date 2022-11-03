@@ -2101,7 +2101,7 @@ void ThreadQuery::rest()
 
 	shop = new TShop();
 	shop->NumShop = 104;
-	shop->NameShop = "Кофейня на Никитской";
+	shop->NameShop = "Никитская";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
@@ -2111,7 +2111,7 @@ void ThreadQuery::rest()
 
 	shop = new TShop();
 	shop->NumShop = 130;
-	shop->NameShop = "Кофейня на Кудринской";
+	shop->NameShop = "Кудринская";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
@@ -2154,17 +2154,17 @@ void ThreadQuery::rest()
 
 	shop = new TShop();
 	shop->NumShop = 290;
-	shop->NameShop = "Кофейня в ТРЦ Хорошо";
+	shop->NameShop = "Хорошо";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
 	shop->NumShop = 295;
-	shop->NameShop = "КОМСОМОЛЬСКИЙ";
+	shop->NameShop = "Комсомольский";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
 	shop->NumShop = 310;
-	shop->NameShop = "Ресторан Внуково Аутлет";
+	shop->NameShop = "Внуково";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
@@ -2282,27 +2282,27 @@ void ThreadQuery::rest_aeroport()
 
 	shop = new TShop();
 	shop->NumShop = 212;
-	shop->NameShop = "Шереметьево-1";
+	shop->NameShop = "Шереметьево 1";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
 	shop->NumShop = 213;
-	shop->NameShop = "Шереметьево-2";
+	shop->NameShop = "Шереметьево 2";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
 	shop->NumShop = 216;
-	shop->NameShop = "Кофейня Шереметьево Е";
+	shop->NameShop = "Шереметьево Е";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
 	shop->NumShop = 217;
-	shop->NameShop = "Шереметьево D";
+	shop->NameShop = "Шереметьево Д";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
 	shop->NumShop = 222;
-	shop->NameShop = "Узбечка Шереметьево";
+	shop->NameShop = "Узбечка ШД";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
@@ -2317,7 +2317,7 @@ void ThreadQuery::rest_aeroport()
 
 	shop = new TShop();
 	shop->NumShop = 300;
-	shop->NameShop = "Домодедово-2";
+	shop->NameShop = "Домодедово 2";
 	list_shop->push_back(shop);
 
 	shop = new TShop();
