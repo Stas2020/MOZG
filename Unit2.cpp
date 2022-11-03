@@ -1147,7 +1147,7 @@ void ThreadQuery::order()
 
 
 		UniQuery1->SQL->Clear();
-		UniQuery1->SQL->Add("SELECT saleman, cod_shop, stol, spoolname, timer, [Action] AS action, business_date, sum_b, chek_sn, dat_chek, dk_dcod, cas_n, comment");
+		UniQuery1->SQL->Add("SELECT saleman, cod_shop, stol, spoolname, timer, [Action] AS action, business_date, sum_b, chek_sn, dat_chek, dk_dcod, cas_n, comment, cod_smen");
 		UniQuery1->SQL->Add("FROM chekA");
 		UniQuery1->SQL->Add("WHERE sum_b <> 0 AND ( "+GetListShop()+") AND business_date >= convert(datetime,'"+StartDTFrag.FormatString("DD/MM/YYYY")+"',104) AND business_date <= convert(datetime,'"+EndDTFrag.FormatString("DD/MM/YYYY")+"',104)");
 		UniQuery1->SQL->Add("ORDER BY dat_chek, timer");
@@ -1215,7 +1215,13 @@ void ThreadQuery::order()
 
 				if (type_export == "aeroport")
 				{
-					check->CountGuest = GetCountGuestAeroport(check->BusinessDate, check->NumShop, check->TableId);
+					//check->CountGuest = GetCountGuestAeroport(check->BusinessDate, check->NumShop, check->TableId);
+					int count_guest = UniQuery1->FieldByName("dk_dcod")->AsInteger;
+					if (count_guest == 0) {
+						check->CountGuest = 1;
+					} else{
+						check->CountGuest = count_guest;
+                    }
 				}
 				else
 				{
