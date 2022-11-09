@@ -1215,17 +1215,19 @@ void ThreadQuery::order()
 
 				if (type_export == "aeroport")
 				{
-					//check->CountGuest = GetCountGuestAeroport(check->BusinessDate, check->NumShop, check->TableId);
-					int count_guest = UniQuery1->FieldByName("dk_dcod")->AsInteger;
+					check->CountGuest = GetCountGuestAeroport(check->BusinessDate, check->NumShop, check->TableId);
+				}
+				else
+				{
+					//check->CountGuest = GetCountGuest(check->BusinessDate, check->NumShop, check->TableId);
+
+					int count_guest = UniQuery1->FieldByName("cod_smen")->AsInteger;
 					if (count_guest == 0) {
 						check->CountGuest = 1;
 					} else{
 						check->CountGuest = count_guest;
-                    }
-				}
-				else
-				{
-					check->CountGuest = GetCountGuest(check->BusinessDate, check->NumShop, check->TableId);
+					}
+
 				}
 
 				if (check->CountGuest > 1)
